@@ -1,0 +1,365 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n\"categoriesArray\": \n  [\n    {\n      \"id\": \"SALES_INQUIRY\",\n      \"name\": \"Sales Inquiry\",\n      \"description\": \"The user is asking about pricing, features, demos, or how to buy the product/service.\"\n    },\n    {\n      \"id\": \"SUPPORT_REQUEST\",\n      \"name\": \"Support Request\",\n      \"description\": \"The user is an existing customer having a problem, reporting a bug, or asking how to use a feature. This includes questions related to DigitalOcean products.\"\n    },\n    {\n      \"id\": \"GENERAL_QUESTION\",\n      \"name\": \"General Question\",\n      \"description\": \"The user is asking a general question that does not fit into the other categories.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d8851a0f-94d9-4014-9722-49ab6381152b",
+      "name": "Define inquiry categories"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming item which contains our data\nconst item = $input.first().json;\n\n// Get the array from the 'categoriesJson' field\nconst categories = item.categoriesArray;\n\n// Format the array into a clean text block for the LLM prompt\nconst promptCategories = categories.map(cat => {\n  return `- ${cat.id}: ${cat.description}`;\n}).join('\\n');\n\n// Add the new prompt string as a field to the item\nitem.promptCategories = promptCategories;\n\n// Return the modified item\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "63328fd3-f6e6-424c-ad09-b8db85630f03",
+      "name": "Add inquiry categories string"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3af75694-de95-489f-ac87-d9ba1f28971b",
+              "name": "category",
+              "value": "={{ $('Extract and format LLM response (Inquiry type)').item.json.category }}",
+              "type": "string"
+            },
+            {
+              "id": "c51d48e8-54c3-4fd3-9003-c5c348917067",
+              "name": "inquirySummary",
+              "value": "={{ $('Extract and format LLM response (Inquiry type)').item.json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "e38b8259-18ac-41f1-a6dc-7a51d60f44bc",
+              "name": "inquiry",
+              "value": "={{ $('On form submission').item.json['What can we help you with? The more details you provide, the better we can help!'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4ca5a1b6-1bbc-4352-838e-47300641e7c6",
+              "name": "inquirerName",
+              "value": "={{ $('On form submission').item.json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "14a78489-d35c-4e24-aeca-b56b4dc08e2d",
+              "name": "inquirerCompany",
+              "value": "={{ $('On form submission').item.json.Company }}",
+              "type": "string"
+            },
+            {
+              "id": "ca0ac42e-7964-4ee4-a322-840c9c159912",
+              "name": "inquirerContactEmail",
+              "value": "={{ $('On form submission').item.json['Where can we reach you?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "1e581d3a-e3d1-4a20-b5f6-9a839e4c0733",
+              "name": "inquirySubmissionTime",
+              "value": "={{ $('On form submission').item.json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1232,
+        0
+      ],
+      "id": "3f97b7be-9631-4f36-a7d0-f7d3ddc51946",
+      "name": "Rename fields for interface adherence"
+    },
+    {
+      "parameters": {
+        "jsCode": "let contentString = $input.first().json.choices[0].message.content;\n\ncontentString = contentString.replace(/```(?:json)?\\n?/, \"\").replace(/```$/, \"\").trim();\n\nconst parsedJson = JSON.parse(contentString);\n\n// Returning the parsed object so it becomes the new output\nreturn parsedJson;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "e8acdfcd-a05d-4ed2-beac-ba868108bdb9",
+      "name": "Extract and format LLM response (Inquiry type)"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=You are an expert administrative assistant responsible for analyzing and routing inbound inquiries. Your task is to analyze the following message from a contact form.\n\nBased on the message content, you must perform two tasks:\n1.  **Categorize the Inquiry:** Classify the message into ONE of the following categories:\n--- CATEGORIES ---\n{{ $json.promptCategories }}\n--- END CATEGORIES ---\n\n2.  **Summarize the Inquiry:** Provide a concise, one-sentence summary of the user's core request.\n\nReturn your complete analysis as a single, clean JSON object with the keys \"category\" and \"summary\". Include only this JSON object in your response, and no other text or preamble. Here is an example of an output string\n--- OUTPUT EXAMPLE ---\n{\\n \"category\": \"SALES_INQUIRY\",\\n \"summary\": \"The user is seeking guidance on migrating their application's backend infrastructure to DigitalOcean, specifically regarding Managed Databases and App Platform offerings, to achieve a more streamlined and cost-predictable solution.\"\\n}\n--- END OUTPUT EXAMPLE ---\n\nHere is the inbound message:\n--- INBOUND MESSAGE ---\nNAME: {{ $('On form submission').item.json.Name }}\nCOMPANY: {{ $('On form submission').item.json.Company }}\nINQUIRY: {{ $('On form submission').item.json['What can we help you with? The more details you provide, the better we can help!'] }}\n--- END INBOUND MESSAGE ---",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        816,
+        0
+      ],
+      "id": "291a7418-31bf-4431-8a56-9d5662a15540",
+      "name": "Determine inquiry type",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "errorMessage": "Form submission not categorized as valid inquiry type"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        320
+      ],
+      "id": "735da263-1e4b-45af-a5e6-a71564193827",
+      "name": "Inquiry categorization error"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "={{ $('Define inquiry categories').item.json.categoriesArray[0].id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b75101b0-807d-4944-8a74-fe7ae33aefd2"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sales inquiry"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ecb30a1e-013e-4409-93f6-179cb60ed3d6",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "SUPPORT_REQUEST",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Support inquiry"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "132a032a-5bcc-4a10-ab52-da69e4d40f45",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "GENERAL_QUESTION",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "General inquiry"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1424,
+        -32
+      ],
+      "id": "0215699d-b346-4552-9d1a-3dfc4f986220",
+      "name": "Switch for sub-workflow routing by category"
+    },
+    {
+      "parameters": {
+        "formTitle": "Contact us",
+        "formDescription": "Let us know how we can help!\n\nLeave your information and our team will get back to you",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "placeholder": "DigitalOcean"
+            },
+            {
+              "fieldLabel": "What can we help you with? The more details you provide, the better we can help!",
+              "fieldType": "textarea",
+              "placeholder": "I'm looking for information about ...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Where can we reach you?",
+              "fieldType": "email",
+              "placeholder": "johnsmith@digitalocean.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "43972e60-0781-48b9-848e-fb0154da2e38",
+      "name": "On form submission",
+      "webhookId": "f2092de0-7547-406f-8709-38f0feafeec0"
+    }
+  ],
+  "connections": {
+    "Define inquiry categories": {
+      "main": [
+        [
+          {
+            "node": "Add inquiry categories string",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add inquiry categories string": {
+      "main": [
+        [
+          {
+            "node": "Determine inquiry type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename fields for interface adherence": {
+      "main": [
+        [
+          {
+            "node": "Switch for sub-workflow routing by category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract and format LLM response (Inquiry type)": {
+      "main": [
+        [
+          {
+            "node": "Rename fields for interface adherence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine inquiry type": {
+      "main": [
+        [
+          {
+            "node": "Extract and format LLM response (Inquiry type)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch for sub-workflow routing by category": {
+      "main": [
+        [],
+        [],
+        [],
+        [
+          {
+            "node": "Inquiry categorization error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {
+    "On form submission": [
+      {
+        "Name": "John Smith",
+        "Company": "Amazing Company",
+        "What can we help you with? The more details you provide, the better we can help!": "Hi there,\r\n\r\nMy name is John, and I'm the lead developer at Amazing Company.\r\n\r\nWe're currently planning to migrate our application's backend infrastructure. Right now, our setup consists of a few Node.js services and a PostgreSQL database hosted on another provider, but we're finding the billing to be overly complex and are consistently running into performance bottlenecks during peak usage.\r\n\r\nMy team has been tasked with finding a more streamlined and cost-predictable solution. We're trying to keep our monthly infrastructure spend around the $800-$1000 mark as we scale.\r\n\r\nOur current hosting agreement is up at the end of next quarter, so we're looking to make a decision and begin the migration process before the holiday season rush begins in November.\r\n\r\nI'm putting together the formal proposal for our CTO. Could you provide some guidance on what a comparable setup would look like on DigitalOcean, specifically around your Managed Databases and App Platform offerings?\r\n\r\nThanks,\r\nJohn",
+        "Where can we reach you?": "youremail@email.com",
+        "submittedAt": "2025-09-26T12:24:02.035-04:00",
+        "formMode": "test"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1d98ee859aadb38944e4bde4cbd89d3abe69eae5b9e4f0616cd6cde55f7bcc3a"
+  }
+}
