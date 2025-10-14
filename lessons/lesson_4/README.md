@@ -1,5 +1,11 @@
 # Lesson 4 - Build an AI sales assistant with n8n
 
+Watch it on YouTube:
+
+[![Lesson 4 video](https://img.youtube.com/vi/BMAv6-YZfvE/0.jpg)](https://www.youtube.com/watch?v=BMAv6-YZfvE)
+
+---
+
 Learn how to build an automated AI sales assistant with n8n
 
 ![Lesson 4 workflow](./images/lesson-4-wf.png)
