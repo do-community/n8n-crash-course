@@ -2,7 +2,7 @@
 
 Watch it on YouTube
 
-[![Lesson 3 video](https://img.youtube.com/vi/QJ0MXbEOijY/0.jpg)](https://www.youtube.com/watch?v=QJ0MXbEOijY)
+[![Lesson 3 video](../../thumbnails/lesson_3.jpg)](https://www.youtube.com/watch?v=QJ0MXbEOijY)
 
 ---
 
