@@ -33,3 +33,11 @@ Learn how to build a sales assistant that can automatically respond to and stack
 Watch it on YouTube:
 
 [![Lesson 4 video](thumbnails/lesson_4.jpg)](https://www.youtube.com/watch?v=BMAv6-YZfvE&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=4)
+
+# [Lesson 5 - Build an AI RAG agent in n8n (Gradient AI method)](./lessons/lesson_5/README.md)
+
+Learn how to quickly build an AI RAG agent that can automatically respond to product questions [Lesson 5](./lessons/lesson_4/README.md).
+
+Watch it on YouTube:
+
+[![Lesson 5 video](../../thumbnails/lesson_5.jpg)](https://www.youtube.com/watch?v=-PrhgxaBZG0&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=5)
