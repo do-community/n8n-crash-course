@@ -40,4 +40,4 @@ Learn how to quickly build an AI RAG agent that can automatically respond to pro
 
 Watch it on YouTube:
 
-[![Lesson 5 video](../../thumbnails/lesson_5.jpg)](https://www.youtube.com/watch?v=-PrhgxaBZG0&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=5)
+[![Lesson 5 video](thumbnails/lesson_5.jpg)](https://www.youtube.com/watch?v=-PrhgxaBZG0&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=5)
