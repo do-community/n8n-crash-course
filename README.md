@@ -36,8 +36,19 @@ Watch it on YouTube:
 
 # [Lesson 5 - Build an AI RAG agent in n8n (Gradient AI method)](./lessons/lesson_5/README.md)
 
-Learn how to quickly build an AI RAG agent that can automatically respond to product questions [Lesson 5](./lessons/lesson_4/README.md).
+Learn how to quickly build an AI RAG agent that can automatically respond to product questions in [Lesson 5](./lessons/lesson_5/README.md).
 
 Watch it on YouTube:
 
 [![Lesson 5 video](thumbnails/lesson_5.jpg)](https://www.youtube.com/watch?v=-PrhgxaBZG0&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=5)
+
+# [Lesson 6 - n8n AI RAG explained (built-in n8n method)](./lessons/lesson_6/README.md)
+
+Understand the components of an AI RAG agent in n8n, and use it to automatically answer to product questions in [Lesson 6](./lessons/lesson_6/README.md).
+
+Watch it on YouTube:
+
+[![Lesson 6 video](thumbnails/lesson_6.jpg)](https://www.youtube.com/watch?v=g2bhGPaDUw0&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=6)
+
+
+
