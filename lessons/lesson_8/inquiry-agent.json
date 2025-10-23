@@ -1,0 +1,2650 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n\"categoriesArray\": \n  [\n    {\n      \"id\": \"SALES_INQUIRY\",\n      \"name\": \"Sales Inquiry\",\n      \"description\": \"The user is asking about pricing, features, demos, or how to buy the product/service.\"\n    },\n    {\n      \"id\": \"SUPPORT_REQUEST\",\n      \"name\": \"Support Request\",\n      \"description\": \"The user is an existing customer having a problem, reporting a bug, or asking how to use a feature. This includes questions related to DigitalOcean products.\"\n    },\n    {\n      \"id\": \"GENERAL_QUESTION\",\n      \"name\": \"General Question\",\n      \"description\": \"The user is asking a general question that does not fit into the other categories.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "72f94423-08a2-4773-8bf6-9ff1f775ed6b",
+      "name": "Define inquiry categories"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming item which contains our data\nconst item = $input.first().json;\n\n// Get the array from the 'categoriesJson' field\nconst categories = item.categoriesArray;\n\n// Format the array into a clean text block for the LLM prompt\nconst promptCategories = categories.map(cat => {\n  return `- ${cat.id}: ${cat.description}`;\n}).join('\\n');\n\n// Add the new prompt string as a field to the item\nitem.promptCategories = promptCategories;\n\n// Return the modified item\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "70a9c2f8-74c2-417d-9a1a-132851aab3de",
+      "name": "Add inquiry categories string"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3af75694-de95-489f-ac87-d9ba1f28971b",
+              "name": "category",
+              "value": "={{ $('Extract and format LLM response (Inquiry type)').item.json.category }}",
+              "type": "string"
+            },
+            {
+              "id": "c51d48e8-54c3-4fd3-9003-c5c348917067",
+              "name": "inquirySummary",
+              "value": "={{ $('Extract and format LLM response (Inquiry type)').item.json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "e38b8259-18ac-41f1-a6dc-7a51d60f44bc",
+              "name": "inquiry",
+              "value": "={{ $('On form submission').item.json['What can we help you with? The more details you provide, the better we can help!'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4ca5a1b6-1bbc-4352-838e-47300641e7c6",
+              "name": "inquirerName",
+              "value": "={{ $('On form submission').item.json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "14a78489-d35c-4e24-aeca-b56b4dc08e2d",
+              "name": "inquirerCompany",
+              "value": "={{ $('On form submission').item.json.Company }}",
+              "type": "string"
+            },
+            {
+              "id": "ca0ac42e-7964-4ee4-a322-840c9c159912",
+              "name": "inquirerContactEmail",
+              "value": "={{ $('On form submission').item.json['Where can we reach you?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "1e581d3a-e3d1-4a20-b5f6-9a839e4c0733",
+              "name": "inquirySubmissionTime",
+              "value": "={{ $('On form submission').item.json.submittedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1232,
+        0
+      ],
+      "id": "f1bac756-8b25-48fe-9daa-620c993ea31a",
+      "name": "Rename fields for interface adherence"
+    },
+    {
+      "parameters": {
+        "jsCode": "let contentString = $input.first().json.choices[0].message.content;\n\ncontentString = contentString.replace(/```(?:json)?\\n?/, \"\").replace(/```$/, \"\").trim();\n\nconst parsedJson = JSON.parse(contentString);\n\n// Returning the parsed object so it becomes the new output\nreturn parsedJson;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "ff8460a6-bb2f-483c-a0fc-2317d424f9f4",
+      "name": "Extract and format LLM response (Inquiry type)"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=You are an expert administrative assistant responsible for analyzing and routing inbound inquiries. Your task is to analyze the following message from a contact form.\n\nBased on the message content, you must perform two tasks:\n1.  **Categorize the Inquiry:** Classify the message into ONE of the following categories:\n--- CATEGORIES ---\n{{ $json.promptCategories }}\n--- END CATEGORIES ---\n\n2.  **Summarize the Inquiry:** Provide a concise, one-sentence summary of the user's core request.\n\nReturn your complete analysis as a single, clean JSON object with the keys \"category\" and \"summary\". Include only this JSON object in your response, and no other text or preamble. Here is an example of an output string\n--- OUTPUT EXAMPLE ---\n{\\n \"category\": \"SALES_INQUIRY\",\\n \"summary\": \"The user is seeking guidance on migrating their application's backend infrastructure to DigitalOcean, specifically regarding Managed Databases and App Platform offerings, to achieve a more streamlined and cost-predictable solution.\"\\n}\n--- END OUTPUT EXAMPLE ---\n\nHere is the inbound message:\n--- INBOUND MESSAGE ---\nNAME: {{ $('On form submission').item.json.Name }}\nCOMPANY: {{ $('On form submission').item.json.Company }}\nINQUIRY: {{ $('On form submission').item.json['What can we help you with? The more details you provide, the better we can help!'] }}\n--- END INBOUND MESSAGE ---",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        816,
+        0
+      ],
+      "id": "999a722d-9035-44ed-af1a-da83d843e169",
+      "name": "Determine inquiry type",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "content": "# Inquiry type + routing\n\nDetermine what type of inquiry was submitted and route it accordingly",
+        "height": 1216,
+        "width": 1488,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "051f5e8f-3b54-446d-8655-58de727921b2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Sub-workflow routing\n\nBy using a standard interface between sub-routes, we have made it easy to decompose parts of this workflow into sub-workflows",
+        "height": 1408,
+        "width": 592,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1280,
+        -624
+      ],
+      "typeVersion": 1,
+      "id": "841207e1-8129-45f3-9e2c-e07e2ce63351",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Sales inquiry\n\nHandle sales inquiry via BANT analysis",
+        "height": 880,
+        "width": 3136,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1888,
+        -624
+      ],
+      "typeVersion": 1,
+      "id": "4310642d-118b-4e1a-8483-116cd44b726b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Defining our inquiry types in a separate node rather than within an LLM prompt ensures we have a single, easily-accessible source-of-truth for our entire automation, keeping it [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)",
+        "height": 96,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        304,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "af8169db-7fe9-41db-b29e-7527d54fe950",
+      "name": "Sticky Note25"
+    },
+    {
+      "parameters": {
+        "content": "We use Digital Ocean's serverless inferencing to categorize the inquiry, giving us the flexibility to easily change models.",
+        "height": 96,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "21da42ff-aa57-4c4b-8281-239a733ac597",
+      "name": "Sticky Note26"
+    },
+    {
+      "parameters": {
+        "content": "## Interface adherence\n\nSub-workflows have access to only their direct inputs, not all previous nodes.\n\nBy mapping all of the relevant information to a standard set of keys, we can ensure decoupling between the initial inquiry classification workflow and the category-specific workflow branches, opening up the opportunity to formally compartmentalize these branches into sub-workflows as our needs grow and the automation gets more complicated.",
+        "height": 256,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        208
+      ],
+      "typeVersion": 1,
+      "id": "f0896895-f8f9-4f2f-b998-7a8f4685310c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=**ROLE**: You are an expert Sales Development Representative AI assistant. Your purpose is to analyze inbound sales inquiries with precision and objectivity to help the sales team prioritize their efforts.\n\n**TASK**: Analyze the following sales inquiry to perform a BANT analysis, calculate a lead score, and provide a summary. Adhere strictly to the scoring rubric provided.\n\n**SCORING RUBRIC**:\nScore each BANT component on a scale of 1 to 7, where:\n* **1**: Not mentioned or hinted at.\n* **2-3**: Vaguely implied or hinted at.\n* **4-5**: Mentioned indirectly or stated with some ambiguity.\n* **6-7**: Explicitly and clearly stated with specific details.\n\n**OUTPUT REQUIREMENTS**:\nReturn your entire analysis in a clean JSON format, mirroring the structure in this example JSON block:\n--- BEGIN JSON BLOCK ---\n{\n  \"bantAnalysis\": {\n    \"budget\": {\n      \"score\": 7,\n      \"justification\": \"The user explicitly states a target monthly spend of '$800-$1000'.\"\n    },\n    \"authority\": {\n      \"score\": 5,\n      \"justification\": \"The user is the 'lead developer' and is creating the proposal, indicating strong influence, but mentions a CTO for final approval.\"\n    },\n    \"need\": {\n      \"score\": 7,\n      \"justification\": \"The user clearly identifies technical needs, including resolving performance bottlenecks and finding a more streamlined, cost-predictable solution.\"\n    },\n    \"timeline\": {\n      \"score\": 7,\n      \"justification\": \"A clear timeline is provided, driven by their current contract ending and a business goal to migrate before the November holiday season.\"\n    }\n  }\n}\n--- END JSON BLOCK ---\n\nHere is the inquiry information\n\n--- BEGIN INQUIRY INFORMATION ---\nInquirer name: {{ $json.inquirerName }}\nInquirer company: {{ $json.inquirerCompany }}\nInquirer contact email: {{ $json.inquirerContactEmail }}\nInquiry: {{ $json.inquiry }}\n--- END INQUIRY INFORMATION",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        -224
+      ],
+      "id": "29a19e93-c6b3-4a8f-bfb0-9d7200cde184",
+      "name": "Perform BANT analysis"
+    },
+    {
+      "parameters": {
+        "content": "## Interface adherence\n\nThe first node in this area references no nodes before the `Switch for sub-workflow routing by category` node, ensuring that we can easily convert this area to a sub-workflow should we want to in the future.",
+        "height": 176,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "3d1e355c-14df-4672-ab70-704f493e1d4c",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "jsCode": "let contentString = $input.first().json.choices[0].message.content;\n\ncontentString = contentString.replace(/```(?:json)?\\n?/, \"\").replace(/```$/, \"\").trim();\n\nconst parsedJson = JSON.parse(contentString);\n\n// Returning the parsed object so it becomes the new output\nreturn parsedJson;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        -224
+      ],
+      "id": "aaafd6f8-31d9-4a8d-8ec9-563ced00c898",
+      "name": "Extract and format LLM response (BANT)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "68eee52f-4b0e-40bd-b8a0-5b82c8f57a2f",
+              "name": "overallBantScore",
+              "value": "={{ ($json.bantAnalysis.budget.score + $json.bantAnalysis.authority.score + $json.bantAnalysis.need.score + $json.bantAnalysis.timeline.score) / 4 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2288,
+        -224
+      ],
+      "id": "c5b5cace-e1bd-4dc0-8472-88d3974ff6bd",
+      "name": "Calculate overall BANT score"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Calculate overall BANT score').item.json.overallBantScore }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    },
+                    "id": "460e9764-6893-43ae-85b0-74dbce64850c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Low priority"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "33a02016-a281-4d5d-bd7a-67724845dcef",
+                    "leftValue": "={{ $('Calculate overall BANT score').item.json.overallBantScore }}",
+                    "rightValue": 5,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Medium priority"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "04548e93-ce94-497a-9085-bd45c09f35d6",
+                    "leftValue": "={{ $('Calculate overall BANT score').item.json.overallBantScore }}",
+                    "rightValue": 7,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "High priority"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2912,
+        -256
+      ],
+      "id": "ab2dbb43-7f60-4df7-877a-26acf2ccb8dc",
+      "name": "Determine lead priority"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Form submission not categorized as valid inquiry type"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        320
+      ],
+      "id": "86a421a1-ebb1-4e95-acf1-cec306abbb9d",
+      "name": "Inquiry categorization error"
+    },
+    {
+      "parameters": {
+        "errorMessage": "An invalid BANT priority level was assigned"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2912,
+        48
+      ],
+      "id": "88090203-69e7-4c0a-9764-1091aaf824b4",
+      "name": "BANT priority error"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=**ROLE**: You are an expert Sales Development Representative AI assistant. Your purpose is to respond to inquiries that have been determined to be low priority by BANT analysis. \n\n**TASK**: Formulate a response email to this inquiry, personalized according to the user's inquiry. Make the response sound professional, but warm. Here is the relevant information\n\n--- BEGIN INFORMATION ---\nName: {{ $('Switch for sub-workflow routing by category').item.json.inquirerName }}\nCompany: {{ $('Switch for sub-workflow routing by category').item.json.inquirerCompany }}\nInquiry: {{ $('Switch for sub-workflow routing by category').item.json.inquiry }}\n--- END INFORMATION ---\n\n**COMPANY INFORMATION**:\nHere is information on the company you represent - DigitalOcean:\n{{ $('Get company information').item.json.content }}\n\n**BRAND TONE**:\nHere is information on the overall brand tone of DigitalOcean:\n{{ $('Get brand information').item.json.content }}\n\n**OUTPUT REQUIREMENTS**:\nReturn ONLY the formatted response email, with no preamble or other information. Here is an example output:\n--- BEGIN EXAMPLE RESPONSE  ---\nDear NAME,\n\nThank you for your interest in DigitalOcean!\n\nWe've received your inquiry and are reviewing the details. In the meantime, we find that many teams find the answers they need by exploring our robust pool of self-help resources. Based on your question, here are a few links that might be helpful:\n\nCommunity Tutorials: A great starting point with thousands of step-by-step guides on nearly any software setup you can imagine. You can search for your topic here: https://www.digitalocean.com/community/tutorials\n\nProduct Documentation: For detailed information on specific products, features, and pricing. You can find our docs here: https://docs.digitalocean.com/\n\nWe recommend exploring these resources to get a feel for our platform. If you have a more specific project or a clear set of technical requirements you'd like to discuss after reviewing them, please feel free to reply to this email with those details. We'll be happy to route your request to the right team.\n\nBest,\n\nThe DigitalOcean Team\n--- END EXAMPLE RESPONSE ---",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        -416
+      ],
+      "id": "d166ef9e-e771-46f3-b573-5bf300138645",
+      "name": "Formulate email (low priority)"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=**ROLE**: You are an expert Sales Development Representative AI assistant. Your purpose is to respond to inquiries that have been determined to be **medium priority** by BANT analysis. \n\n**TASK**: Analyze the user's message to identify their primary interest (e.g., \"Managed Kubernetes,\" \"migrating an application,\" \"reducing cloud costs\"). Then, use that topic to generate a personalized response email that sets the expectation for a follow-up within one business week.\n\n--- BEGIN INFORMATION ---\nName: {{ $('Switch for sub-workflow routing by category').item.json.inquirerName }}\nCompany: {{ $('Switch for sub-workflow routing by category').item.json.inquirerCompany }}\nInquiry: {{ $('Switch for sub-workflow routing by category').item.json.inquirerContactEmail }}\n--- END INFORMATION ---\n\n**COMPANY INFORMATION**:\nHere is information on the company you represent - DigitalOcean:\n{{ $('Get company information').item.json.content }}\n\n**BRAND TONE**:\nHere is information on the overall brand tone of DigitalOcean:\n{{ $('Get brand information').item.json.content }}\n\n**OUTPUT REQUIREMENTS**:\nReturn ONLY the formatted response email, with no preamble or other information. Here is an example output:\n--- BEGIN EXAMPLE RESPONSE  ---\nDear NAME,\n\nThank you for your interest in DigitalOcean!\n\nWe've received your inquiry and have routed it to our solutions team. We're looking forward to discussing your project involving SOME_TOPIC_PULLED_FROM_EMAIL in more detail. A team member will reach out to you within one business week to better understand your needs and determine how we can help you.\n\nWhile you wait for our team to connect, many find it helpful to explore our pricing calculator to estimate potential monthly costs: [https://www.digitalocean.com/pricing/calculator](https://www.digitalocean.com/pricing/calculator)\n\nWe appreciate your patience and look forward to speaking with you soon.\n\nBest regards,\n\nThe DigitalOcean Team\n--- END EXAMPLE RESPONSE ---",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        -192
+      ],
+      "id": "26553692-4d19-47d7-9b06-e0f89bcce228",
+      "name": "Formulate email (medium priority)"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=**ROLE**: You are an expert Sales Development Representative AI assistant. Your purpose is to respond to inquiries that have been determined to be **HIGH priority** by BANT analysis. \n\n**TASK**: Analyze the user's message to identify their primary interest (e.g., \"Managed Kubernetes,\" \"migrating an application,\" \"reducing cloud costs\"). Then, generate a personalized response email that conveys urgency and guides the lead toward booking a meeting. The response must set the expectation for a follow-up within one business day (24 hours). Here is the relevant information\n\n\n--- BEGIN INFORMATION ---\nName: {{ $('Switch for sub-workflow routing by category').item.json.inquirerName }}\nCompany: {{ $('Switch for sub-workflow routing by category').item.json.inquirerCompany }}\nInquiry: {{ $('Switch for sub-workflow routing by category').item.json.inquiry }}\n--- END INFORMATION ---\n\n**COMPANY INFORMATION**:\nHere is information on the company you represent - DigitalOcean:\n{{ $('Get company information').item.json.content }}\n\n**BRAND TONE**:\nHere is information on the overall brand tone of DigitalOcean:\n{{ $('Get brand information').item.json.content }}\n\n**OUTPUT REQUIREMENTS**:\nReturn ONLY the formatted response email, with no preamble or other information. Here is an example output:\n--- BEGIN EXAMPLE RESPONSE  ---\nDear NAME,\n\nThank you for reaching out to DigitalOcean! Our team has received your inquiry and we're excited to learn more about your project involving [AI should insert the specific inquiry topic here].\n\nGiven your project's requirements, this is a priority for us. A solutions specialist will be reaching out to you personally within the next business day.\n\nTo expedite the process, you can book a time that works best for you directly on our calendar:\nhttps://mycalendar.example.com/schedule\n\nWe look forward to connecting and helping you build something amazing.\n\nBest regards,\n\nThe DigitalOcean Team\n--- END EXAMPLE RESPONSE ---",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        32
+      ],
+      "id": "405e6aaa-e067-4c88-8d1f-553dbc46d392",
+      "name": "Formulate email (high priority)"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "1z460lJG7Ba_RYIIj_6i2qaQenZBNMa1MUxavwzeCnUk"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2496,
+        -224
+      ],
+      "id": "60c91aa3-bf04-451a-aade-fb92307fa75d",
+      "name": "Get company information"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1OA_dhPIeZKfUzoJovkAvc7Yqc5vgDHTVT8kZwNaCxLQ/edit"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2704,
+        -224
+      ],
+      "id": "41aefa94-9d1d-42ca-aae8-1e49db75dc7d",
+      "name": "Get brand information"
+    },
+    {
+      "parameters": {
+        "model": "openai-gpt-4o",
+        "prompt": "=If the following email text block is NOT ready to be sent as is, remove any artifacts or indications that it was not written by a human, and return ONLY the formatted email text so that it may be sent out. Here is the text in question, starting on a new line:\n{{ $('Funnel email branches').item.json.choices[0].message.content }}",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        3712,
+        -192
+      ],
+      "id": "37d27896-49e9-4427-bca0-b6e081e381b1",
+      "name": "Verify email is appropriate"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3520,
+        -208
+      ],
+      "id": "e88e2aa1-1472-4344-8f13-48ce72a8933e",
+      "name": "Funnel email branches"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch for sub-workflow routing by category').item.json.inquirerContactEmail }}",
+        "subject": "Re: Your DigitalOcean inquiry",
+        "emailType": "text",
+        "message": "={{ $json.choices[0].message.content }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4192,
+        -192
+      ],
+      "id": "8b63ade4-0d62-4602-9ca0-f9e858effff6",
+      "name": "Send a message",
+      "webhookId": "37697c4e-3c2a-4e2a-a757-8a087d33b106"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JU-IFqbsrBAn3IPERQgvbNJV0LiSOYoD8-PYvjixFvw",
+          "mode": "list",
+          "cachedResultName": "Sales leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JU-IFqbsrBAn3IPERQgvbNJV0LiSOYoD8-PYvjixFvw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JU-IFqbsrBAn3IPERQgvbNJV0LiSOYoD8-PYvjixFvw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact name": "={{ $('Switch for sub-workflow routing by category').item.json.inquirerName }}",
+            "Company name": "={{ $('Switch for sub-workflow routing by category').item.json.inquirerCompany }}",
+            "Contact email": "={{ $('Switch for sub-workflow routing by category').item.json.inquirerContactEmail }}",
+            "Inquiry": "={{ $('Switch for sub-workflow routing by category').item.json.inquiry }}",
+            "Overall BANT score (1-7)": "={{ $('Calculate overall BANT score').item.json.overallBantScore }}",
+            "Budget score (1-7)": "={{ $('Extract and format LLM response (BANT)').item.json.bantAnalysis.budget.score }}",
+            "Authority score (1-7)": "={{ $('Extract and format LLM response (BANT)').item.json.bantAnalysis.authority.score }}",
+            "Need score (1-7)": "={{ $('Extract and format LLM response (BANT)').item.json.bantAnalysis.need.score }}",
+            "Timeline score (1-7)": "={{ $('Extract and format LLM response (BANT)').item.json.bantAnalysis.timeline.score }}",
+            "Inquiry time": "={{ $('Switch for sub-workflow routing by category').item.json.inquirySubmissionTime }}",
+            "Automated response email": "={{ $('Verify email is appropriate').item.json.choices[0].message.content }}",
+            "Automated response time": "={{ $now }}",
+            "Follow up by": "={{ $('Calculate overall BANT score').item.json.overallBantScore >= 6 ? $now.plus({ hours: 24 }) : $('Calculate overall BANT score').item.json.overallBantScore >= 3 ? $now.plus({ days: 7 }) : 'N/A' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Contact name",
+              "displayName": "Contact name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company name",
+              "displayName": "Company name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact email",
+              "displayName": "Contact email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Inquiry",
+              "displayName": "Inquiry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Overall BANT score (1-7)",
+              "displayName": "Overall BANT score (1-7)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Budget score (1-7)",
+              "displayName": "Budget score (1-7)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Authority score (1-7)",
+              "displayName": "Authority score (1-7)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Need score (1-7)",
+              "displayName": "Need score (1-7)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timeline score (1-7)",
+              "displayName": "Timeline score (1-7)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Inquiry time",
+              "displayName": "Inquiry time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Automated response time",
+              "displayName": "Automated response time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Automated response email",
+              "displayName": "Automated response email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Follow up by",
+              "displayName": "Follow up by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4432,
+        -192
+      ],
+      "id": "132771f4-502c-4274-8486-2487edd6e16a",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "amount": "={{ ((Math.random() + Math.random()) / 2) * 16 + 6 }}",
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3920,
+        -336
+      ],
+      "id": "5d2f2a4b-9701-4ef6-8248-09bcb390b527",
+      "name": "Wait",
+      "webhookId": "f3d468af-d6c3-48dd-acf9-97d33c9b319c"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mzz3rxnthlckquw2dwzdetof.agents.do-ai.run/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "messages",
+              "value": "={{ [  \n  {\n    \"role\": \"system\",\n    \"content\": $json.systemPrompt\n  },\n  {\n    \"role\": \"user\",\n    \"content\": $('Switch for sub-workflow routing by category').item.json.inquiry\n  }\n] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3856,
+        1136
+      ],
+      "id": "a72f6ccc-7e4a-4722-a415-0ddb83b142f1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aba30f3e-e483-4949-aeb9-4b14356cdaee",
+              "name": "systemPrompt",
+              "value": "=<Role>\nYou are an expert technical support agent for DigitalOcean. Your sole purpose is to provide accurate, helpful, and safe answers to user questions *only* about DigitalOcean. You are professional, concise, and you will strictly adhere to the instructions and constraints provided.\n</Role>\n\n<Instructions>\n1.  **Analyze Scope**: First, determine if the user query is about DigitalOcean or its products.\n    -   If the question is unrelated, you MUST ignore all other instructions and respond ONLY with the following in order to raise an exception: \"{{ $('Define product question exception types (Gradient AI agent)').item.json.exceptionNotRelated }}\"\n    -   If the question is related, proceed to the next step.\n\n2.  **Formulate Response**:\n    -   Synthesize a clear and direct answer to the user query using relevant information.\n    -   If the context contains code snippets, API endpoints, or terminal commands, you MUST format them in markdown code blocks for clarity (e.g., ```python ... ```).\n    -   If the context contains step-by-step instructions, use a numbered list.\n</Instructions>\n\n<Constraints>\n- **DO NOT** answer questions that are not directly about DigitalOCean.\n- **DO NOT** make up features, functions, or instructions.\n- **DO NOT** speculate, give opinions, or compare our product to competitors.\n- **DO NOT** include a preamble.\n- **DO** respond with **only** the response to the question (unless you raised an exception), ready to be sent directly to the inquirer, formatted as markdown. \n</Constraints>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3616,
+        1136
+      ],
+      "id": "96634e3f-138c-4e7d-b5a8-40aa35a82087",
+      "name": "Create product answering system prompt"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc7f13b4-9d82-4c3d-87d6-dede54624c4b",
+              "name": "exceptionNotRelated",
+              "value": "EXCEPTION_NOT_RELATED",
+              "type": "string"
+            },
+            {
+              "id": "4d38f287-544e-4865-84ec-e3122eaac23a",
+              "name": "exceptionCouldNotAnswer",
+              "value": "EXCEPTION_COULD_NOT_ANSWER",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3360,
+        1136
+      ],
+      "id": "9ee96404-8789-4d97-968f-f9b9755051e1",
+      "name": "Define product question exception types (Gradient AI agent)"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        176,
+        0
+      ],
+      "id": "8b2a1d9e-797a-4f89-8ace-ddee64571e0c",
+      "name": "On form submission"
+    },
+    {
+      "parameters": {
+        "formTitle": "Contact us",
+        "formDescription": "Let us know how we can help!\n\nLeave your information and our team will get back to you",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "placeholder": "DigitalOcean"
+            },
+            {
+              "fieldLabel": "What can we help you with? The more details you provide, the better we can help!",
+              "fieldType": "textarea",
+              "placeholder": "I'm looking for information about ...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Where can we reach you?",
+              "fieldType": "email",
+              "placeholder": "johnsmith@digitalocean.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        -16
+      ],
+      "id": "0c68eeba-1af5-434b-8492-b15b290109ff",
+      "name": "On form submission (Product)",
+      "webhookId": "591c819e-b1a5-4916-ad34-ec4c5c987ed5"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch for sub-workflow routing by category').item.json.inquirerContactEmail }}",
+        "subject": "Re: Your DigitalOcean inquiry",
+        "emailType": "text",
+        "message": "={{ $json.choices[0].message.content }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4352,
+        1136
+      ],
+      "id": "d347cdc2-8432-4535-a6c8-ecff886af947",
+      "name": "Send email (product info)",
+      "webhookId": "d7e67225-32a4-40fb-9350-308490428235"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=A user submitted a contact form with the following information:\nNAME: {{ $('Switch for sub-workflow routing by category').item.json.inquirerName }}\nINQUIRY: {{ $('Switch for sub-workflow routing by category').item.json.inquiry }}\n\nHere is the requested information:\n{{ $json.choices[0].message.content }}\n\nFormulate an email that we can send back to the inquirer with the answer to his/her question. Do not include a preamble, and return only the email response itself. Do not include a subject - only the email body.",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        4112,
+        1136
+      ],
+      "id": "706af19f-c313-4c43-a759-c714dd1ff3af",
+      "name": "Create a text completion"
+    },
+    {
+      "parameters": {
+        "content": "We add this passthrough node so we have a common point of reference for various forms so we can reference a fixed node name in future nodes, but have the flexibility to tray different pinned data.",
+        "height": 128,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "c89ed4d5-9602-4bd9-990f-0e6400ca74a1",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## Wait node\n\nRemoved wait for testing purposes. Plug in for production, or add an `IF` node testing for manual execution or \"test\" input form type.\n\nThe node waits for a minimum of 6 and maximum of 24 minutes (6+16), being more likely to land around the middle (14 minutes)\n\nChange the values `6` and `16` in the node to set the minimum and range.",
+        "height": 240,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4048,
+        -576
+      ],
+      "typeVersion": 1,
+      "id": "21965229-5c8a-4de5-8413-a71194dc7a96",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## BANT analysis\n\nBANT (Budget, Application, Need, Timeline) is a sales lead qualification framework that allows sales employees to prioritize inquiries that are likely to lead to revenue.\n\nWe can use AI to estimate this score based on the inquiry to automate low-level sales work.",
+        "height": 192,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1920,
+        -448
+      ],
+      "typeVersion": 1,
+      "id": "041a085e-aadb-499a-9593-a65dcabbd56d",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "content": "## Fetching company-relevant information\n\nGetting information about the company and brand tone will help make answers (1) grounded and (2) on-brand. These qualities are essential to scaling.",
+        "height": 176,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2432,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "c9f2b8b3-d5d5-48d8-a9ce-f0db6a8e1ecd",
+      "name": "Sticky Note21"
+    },
+    {
+      "parameters": {
+        "content": "## Conditional email formulation\n\nDepending on the BANT score, leads are responded to with different emails.\n\nAutomation affords high scalability, but AI allows us to maintain personalization by catering responses to the specifics of an inquiry.\n\nThe responses come (1) quickly, letting prospective leads know that their time is valued and the company operates efficiently, and (2) with a **specific commitment** on followup: high priority leads are told they will be responded to in 24 hours along with a scheduling link to find a convenient time, medium priority within a week, and low priority are gently directed to self-serve resources.",
+        "height": 256,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3456,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "9be370e2-530a-484a-ad98-6138e4ea624f",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "content": "## Response check\n\nBefore sending, the emailed is verified as appropriate. You would not want to implement a large-scale, automated solution without some checks to ensure that your potential customers are not mistreated.",
+        "height": 192,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3536,
+        -416
+      ],
+      "typeVersion": 1,
+      "id": "165e7507-068c-41a7-806b-0622fedfd2a1",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "content": "## Email and automatic record-keeping\n\nThe response email is sent, and the central repository where sales and solutions associates can see leads is updates so that they can stack rank priorities and fulfill commitments.",
+        "height": 208,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4208,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "4ffebe39-de2e-4dac-934f-d84cb5249c77",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "content": "# Support inquiry (account-specific and general)\n\nHandle support requests by routing to the appropriate workflow",
+        "height": 2032,
+        "width": 3568,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1888,
+        272
+      ],
+      "typeVersion": 1,
+      "id": "3408a01f-57aa-41b2-ae0d-f32e39dc6cda",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## RAG method 1: Using DigitalOcean's agent builder\n\nUse a DigitalOcean Agent, which natively performs retrieval on linked knowledge bases.\n\nYou can create knowledge bases easily in the DigitalOcean dashboard through web scraping, file upload, S3 buckets, and more. Go to the DigitalOcean dashboard to learn more.\n\nIn this case, we use an agent which is connected to a knowledge base that was built by scraping all subpaths under `https://docs.digitalocean.com/products/` and `https://docs.digitalocean.com/reference/`",
+        "height": 480,
+        "width": 1376,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3264,
+        880
+      ],
+      "typeVersion": 1,
+      "id": "d0339513-8e97-4e67-9a03-7cc2ad92dce6",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## Alternative - chat\n\nAlternatively, instead of emailing the user a response, we could do something like use a webhook to open a chat window on the frontend in the user's UI, given that chat is probably a better interface for answering questions on this branch (eneral product questions).",
+        "height": 192,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4688,
+        976
+      ],
+      "typeVersion": 1,
+      "id": "8c4d9752-8eb8-4824-a092-669b7eb4efd3",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n\"categoriesArray\": \n  [\n    {\n      \"id\": \"ACCOUNT_SPECIFIC_INQUIRY\",\n      \"name\": \"Account specific inquiry\",\n      \"description\": \"The user is asking about something particular to his/her account, like a recent billing charge, a login/password issue, whether he should change server regions, etc.\"\n    },\n    {\n      \"id\": \"PRODUCT_HELP\",\n      \"name\": \"Product help\",\n      \"description\": \"The user is seeking assistance or has a question on how to use a product, like asking for clarification on documentation, asking how to make an API request, etc.\"\n    },\n    {\n      \"id\": \"OTHER\",\n      \"name\": \"Other\",\n      \"description\": \"The user is asking or saying something else that does not fit into the other categories.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        560
+      ],
+      "id": "b294f8db-d902-419c-8aa9-c0026d4d2d13",
+      "name": "Define support request categories"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the incoming item which contains our data\nconst item = $input.first().json;\n\n// Get the array from the 'categoriesJson' field\nconst categories = item.categoriesArray;\n\n// Format the array into a clean text block for the LLM prompt\nconst promptCategories = categories.map(cat => {\n  return `- ${cat.id}: ${cat.description}`;\n}).join('\\n');\n\n// Add the new prompt string as a field to the item\nitem.promptCategories = promptCategories;\n\n// Return the modified item\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        560
+      ],
+      "id": "8a2251df-ed6c-4843-9b56-2c707ae126b2",
+      "name": "Add support request categories string"
+    },
+    {
+      "parameters": {
+        "errorMessage": "A support request was not properly categorized"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        848
+      ],
+      "id": "7f6aec92-fd28-44f9-ad04-710fd8807c30",
+      "name": "Support request categorization error"
+    },
+    {
+      "parameters": {
+        "model": "llama3.3-70b-instruct",
+        "prompt": "=You are an expert administrative assistant responsible for analyzing and routing inbound inquiries. Your task is to analyze the following message from a contact form.\n\nBased on the message content, you must perform one task:\n1.  **Categorize the Inquiry:** Classify the message into ONE of the following categories:\n--- CATEGORIES ---\n{{ $('Add support request categories string').first().json.promptCategories }}\n--- END CATEGORIES ---\n\nReturn your complete analysis as a single, clean JSON object with the single key \"category\". Include only this JSON object in your response, and no other text or preamble. Here is an example of an output string\n--- OUTPUT EXAMPLE ---\n{\"category\": \"ACCOUNT_SPECIFIC_INQUIRY\"}\n--- END OUTPUT EXAMPLE ---\n\nHere is the inbound message:\n--- INBOUND MESSAGE ---\nNAME: {{ $('Switch for sub-workflow routing by category').item.json.inquirerName }}\nCOMPANY: {{ $('Switch for sub-workflow routing by category').item.json.inquirerCompany }}\nINQUIRY: {{ $('Switch for sub-workflow routing by category').item.json.inquiry }}\n--- END INBOUND MESSAGE ---",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        560
+      ],
+      "id": "5553d969-e049-4065-80d2-f4f1449ef813",
+      "name": "Determine support inquiry type",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "jsCode": "let contentString = $input.first().json.choices[0].message.content;\ncontentString = contentString.replace(/```(?:json)?\\n?/, \"\").replace(/```$/, \"\").trim();\n\nconst parsedJson = JSON.parse(contentString);\n\nreturn parsedJson;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2624,
+        560
+      ],
+      "id": "56532068-1c06-44c9-9899-4222dbd10c06",
+      "name": "Extract and format LLM response (Support inquiry type)"
+    },
+    {
+      "parameters": {
+        "content": "## Sub-category classification\n\nCategorize the support inquiry into a sub-category, just as we did in the initial flow (red block)",
+        "height": 112,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2080,
+        416
+      ],
+      "typeVersion": 1,
+      "id": "d3bc02dc-5c8a-4889-ba79-680be5a31caa",
+      "name": "Sticky Note27"
+    },
+    {
+      "parameters": {
+        "content": "# Product questions (Retrieval Augmented Generation - RAG)",
+        "height": 1488,
+        "width": 2208,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        800
+      ],
+      "id": "f363c22b-87b5-4982-858f-e95ed031b994",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "={{ $('Define inquiry categories').item.json.categoriesArray[0].id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b75101b0-807d-4944-8a74-fe7ae33aefd2"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sales inquiry"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ecb30a1e-013e-4409-93f6-179cb60ed3d6",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "SUPPORT_REQUEST",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Support inquiry"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "132a032a-5bcc-4a10-ab52-da69e4d40f45",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "GENERAL_QUESTION",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "General inquiry"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1424,
+        -32
+      ],
+      "id": "201b7679-50ac-424f-ae0e-da1c42c413df",
+      "name": "Switch for sub-workflow routing by category"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "={{ $('Add support request categories string').item.json.categoriesArray[0].id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "48338626-0017-4491-b1a4-401cd38605a1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Account specific inquiry"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "31ee7f79-0115-4abc-a4b6-50b99cb9fd68",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "={{ $('Add support request categories string').item.json.categoriesArray[1].id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Product help"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6020dbba-a15c-4c33-834c-d35a91032032",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "={{ $('Add support request categories string').item.json.categoriesArray[2].id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Other"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2832,
+        528
+      ],
+      "id": "cdf7e673-7e2d-4060-ba40-b41fe5c2ab25",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "formTitle": "Contact us",
+        "formDescription": "Let us know how we can help!\n\nLeave your information and our team will get back to you",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "placeholder": "DigitalOcean"
+            },
+            {
+              "fieldLabel": "What can we help you with? The more details you provide, the better we can help!",
+              "fieldType": "textarea",
+              "placeholder": "I'm looking for information about ...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Where can we reach you?",
+              "fieldType": "email",
+              "placeholder": "johnsmith@digitalocean.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        -240
+      ],
+      "id": "b4743771-301a-41f8-a59c-c7efb1450830",
+      "name": "On form submission (Account)",
+      "webhookId": "7087c510-0be6-4c15-b894-02c63aaf0b11"
+    },
+    {
+      "parameters": {
+        "formTitle": "Contact us",
+        "formDescription": "Let us know how we can help!\n\nLeave your information and our team will get back to you",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "placeholder": "DigitalOcean"
+            },
+            {
+              "fieldLabel": "What can we help you with? The more details you provide, the better we can help!",
+              "fieldType": "textarea",
+              "placeholder": "I'm looking for information about ...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Where can we reach you?",
+              "fieldType": "email",
+              "placeholder": "johnsmith@digitalocean.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        400
+      ],
+      "id": "4f4fbcb8-0813-4000-b2ad-c962c327786a",
+      "name": "On form submission (Sales - medium priority)",
+      "webhookId": "fc555cc6-0d6d-47ca-bf84-078347227327"
+    },
+    {
+      "parameters": {
+        "formTitle": "Contact us",
+        "formDescription": "Let us know how we can help!\n\nLeave your information and our team will get back to you",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "placeholder": "DigitalOcean"
+            },
+            {
+              "fieldLabel": "What can we help you with? The more details you provide, the better we can help!",
+              "fieldType": "textarea",
+              "placeholder": "I'm looking for information about ...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Where can we reach you?",
+              "fieldType": "email",
+              "placeholder": "johnsmith@digitalocean.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        192
+      ],
+      "id": "9cb648ec-1251-452e-9a8c-a70de4444b8e",
+      "name": "On form submission (Sales - high priority)",
+      "webhookId": "faeea4cf-c72e-4895-9b91-0fbe06496f0f"
+    },
+    {
+      "parameters": {
+        "formTitle": "Contact us",
+        "formDescription": "Let us know how we can help!\n\nLeave your information and our team will get back to you",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "placeholder": "DigitalOcean"
+            },
+            {
+              "fieldLabel": "What can we help you with? The more details you provide, the better we can help!",
+              "fieldType": "textarea",
+              "placeholder": "I'm looking for information about ...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Where can we reach you?",
+              "fieldType": "email",
+              "placeholder": "johnsmith@digitalocean.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        608
+      ],
+      "id": "42d2a01e-60fa-465f-8801-fef56228757b",
+      "name": "On form submission (Sales - low priority)",
+      "webhookId": "67332efa-d0e6-4cd4-8654-b006061d22a0"
+    },
+    {
+      "parameters": {
+        "errorMessage": "No default implementation"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        3040,
+        848
+      ],
+      "id": "932ae9db-6931-4817-9bd9-27fb056ebc60",
+      "name": "Handle default case"
+    },
+    {
+      "parameters": {
+        "formTitle": "RAG upload",
+        "formDescription": "Upload your documents for RAG here",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload your file(s)",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        3328,
+        1664
+      ],
+      "id": "83dbc182-31d7-4863-8802-616d7069dc01",
+      "name": "Upload your file here",
+      "webhookId": "0eadc5f0-e612-4591-865f-ed40a0409221"
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        4320,
+        2128
+      ],
+      "id": "b892b357-5572-485e-b7c8-da12c04c4799",
+      "name": "Embeddings OpenAI",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "specificField",
+        "binaryDataKey": "Upload_your_file_s_",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3792,
+        1824
+      ],
+      "id": "206ab726-0d59-46cf-9317-bcc1ce1ff0f5",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "knowledge_base",
+        "toolDescription": "Use this knowledge base to answer questions from the user",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        4688,
+        1712
+      ],
+      "id": "eb7da817-9f27-4b78-ba2d-de91da9e38ab",
+      "name": "Query Data Tool"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        4464,
+        1712
+      ],
+      "id": "b701d86d-2d24-445e-b8eb-d8aaf156d64f",
+      "name": "OpenAI Chat Model",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "content": "### RAG flow",
+        "height": 620,
+        "width": 1288,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4000,
+        1440
+      ],
+      "typeVersion": 1,
+      "id": "6090bf03-707b-4442-8737-d09b408a7571",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "value": "vector_store_key",
+          "mode": "list",
+          "cachedResultName": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        3520,
+        1664
+      ],
+      "id": "f7d7c193-f331-4008-9a08-9ad7b497de7b",
+      "name": "In-memory vector store"
+    },
+    {
+      "parameters": {
+        "content": "## RAG Method 2: Using the AI agent node",
+        "height": 860,
+        "width": 2056,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3264,
+        1408
+      ],
+      "typeVersion": 1,
+      "id": "3af78246-c3d6-4fba-ac4e-1063ad22198e",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "### Load data",
+        "height": 460,
+        "width": 700,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3280,
+        1600
+      ],
+      "typeVersion": 1,
+      "id": "2130bd13-7388-4a85-9d63-acf3a11f49f9",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Rename fields for interface adherence').item.json.inquirerContactEmail }}",
+        "subject": "Re: Your DigitalOcean inquiry",
+        "emailType": "text",
+        "message": "={{ $json.choices[0].message.content }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        5136,
+        1504
+      ],
+      "id": "714a3152-e862-4229-84f9-b6bca9bb8321",
+      "name": "Email product info (manual RAG)",
+      "webhookId": "eb845445-87dd-496d-9e57-e4636186a781",
+      "alwaysOutputData": false,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc7f13b4-9d82-4c3d-87d6-dede54624c4b",
+              "name": "exceptionNotRelated",
+              "value": "EXCEPTION_NOT_RELATED",
+              "type": "string"
+            },
+            {
+              "id": "4d38f287-544e-4865-84ec-e3122eaac23a",
+              "name": "exceptionCouldNotAnswer",
+              "value": "EXCEPTION_COULD_NOT_ANSWER",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4240,
+        1504
+      ],
+      "id": "e704c53f-70a0-46c1-88d5-3cd057b0af98",
+      "name": "Define product question exception types (n8n agent)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aba30f3e-e483-4949-aeb9-4b14356cdaee",
+              "name": "systemPrompt",
+              "value": "=<Role>\nYou are an expert technical support agent for DigitalOcean. Your sole purpose is to provide accurate, helpful, and safe answers to user questions *only* about DigitalOcean. You are professional, concise, and you will strictly adhere to the instructions and constraints provided.\n</Role>\n\n<Instructions>\n1.  **Analyze Scope**: First, determine if the user query is about DigitalOcean or its products.\n    -   If the question is unrelated, you MUST ignore all other instructions and respond ONLY with the following in order to raise an exception: \"{{ $('Define product question exception types (n8n agent)').item.json.exceptionNotRelated }}\"\n    -   If the question is related, proceed to the next step.\n\n2.  **Ground Your Answer**: Your entire response MUST be grounded in the official information provided in the attached knowledge bases. This is your only source of truth. Do not use any external knowledge or prior training.\n\n3.  **Formulate Response**:\n    -   Synthesize a clear and direct answer to the user query using relevant information.\n    -   If the context contains code snippets, API endpoints, or terminal commands, you MUST format them in markdown code blocks for clarity (e.g., ```python ... ```).\n    -   If the context contains step-by-step instructions, use a numbered list.\n</Instructions>\n\n<Constraints>\n- **DO NOT** answer questions that are not directly about DigitalOCean.\n- **DO NOT** make up features, functions, or instructions.\n- **DO NOT** speculate, give opinions, or compare our product to competitors.\n- **DO NOT** provide any information that is not explicitly present in your knowledge bases\n- **DO NOT** include a preamble.\n- **DO** respond with **only** the response to the question (unless you raised an exception), ready to be sent directly to the inquirer, formatted as markdown. \n</Constraints>",
+              "type": "string"
+            },
+            {
+              "id": "1e4acc87-6829-40bd-8f18-17c92960f9f0",
+              "name": "sesssionId",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4448,
+        1504
+      ],
+      "id": "9ba81591-a2aa-4d29-a3d5-80fe168ffd2b",
+      "name": "Create product answering system prompt (n8n agent)"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=How do i list my digital ocean droplets with your api?",
+        "options": {
+          "systemMessage": "=<Role>\nYou are an expert technical support agent for DigitalOcean. Your sole purpose is to provide accurate, helpful, and safe answers to user questions *only* about DigitalOcean. You are professional, concise, and you will strictly adhere to the instructions and constraints provided.\n</Role>\n\n<Instructions>\n1.  **Analyze Scope**: First, determine if the user query is about DigitalOcean.\n    -   If the question is unrelated, you MUST ignore all other instructions and respond ONLY with the following in order to raise an exception: \"{{ $('Define product question exception types (n8n agent)').item.json.exceptionNotRelated }}\"\n    -   If the question is related, proceed to the next step.\n\n2.  **Ground Your Answer**: Your entire response MUST be grounded in the official information provided in the attached knowledge bases. This is your only source of truth. Do not use any external knowledge or prior training.\n\n3.  **Formulate Response**:\n    -   Synthesize a clear and direct answer to the user query using relevant information.\n    -   If the context contains code snippets, API endpoints, or terminal commands, you MUST format them in markdown code blocks for clarity (e.g., ```python ... ```).\n    -   If the context contains step-by-step instructions, use a numbered list.\n</Instructions>\n\n<Constraints>\n- **DO NOT** answer questions that are not directly about DigitalOCean.\n- **DO NOT** make up features, functions, or instructions.\n- **DO NOT** speculate, give opinions, or compare our product to competitors.\n- **DO NOT** provide any information that is not explicitly present in your knowledge bases\n- **DO NOT** include a preamble.\n- **DO** respond with **only** the response to the question (unless you raised an exception), ready to be sent directly to the inquirer, formatted as markdown. \n</Constraints>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        4624,
+        1504
+      ],
+      "id": "25dd8e3f-585b-41e2-89bf-bc317493ce46",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "anthropic-claude-opus-4",
+        "prompt": "=A user submitted a contact form with the following information:\nNAME: {{ $('Switch for sub-workflow routing by category').item.json.inquirerName }}\nINQUIRY: {{ $('Switch for sub-workflow routing by category').item.json.inquiry }}\n\nHere is the requested information:\n{{ $json.output }}\n\nFormulate an email that we can send back to the inquirer with the answer to his/her question. Do not include a preamble, and return only the email response itself. Do not include a subject - only the email body.",
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.7
+        },
+        "requestOptions": {}
+      },
+      "type": "@digitalocean/n8n-nodes-digitalocean-gradient-serverless-inference.digitalOceanGradientServerlessInference",
+      "typeVersion": 1,
+      "position": [
+        4944,
+        1504
+      ],
+      "id": "5bf18c6a-4abb-459f-b7ef-919a310d4cf6",
+      "name": "Formulate email (RAG)",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "content": "# Account-related questions (require authentication)",
+        "height": 480,
+        "width": 2208,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        304
+      ],
+      "id": "339eb3c3-0648-458b-a63e-11557a3d2227",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "## Authentication workflow",
+        "height": 368,
+        "width": 1600,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3264,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "63a5a932-d182-477b-8e45-fc71b5d8b094",
+      "name": "Sticky Note29"
+    },
+    {
+      "parameters": {
+        "content": "## Authorized inquiry handling\n",
+        "height": 368,
+        "width": 496,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4896,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "9b2fd235-52d5-433f-88a5-9deddf556450",
+      "name": "Sticky Note30"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "auth_tokens",
+          "mode": "list",
+          "cachedResultName": "auth_tokens"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "token": "={{ $json.data }}",
+            "inquiry_id": "={{ $execution.id }}",
+            "user_email": "={{ $('Switch for sub-workflow routing by category').item.json.inquirerContactEmail }}",
+            "expires_at": "={{ $now.plus({minutes: 15}) }}",
+            "resume_url": "={{ $execution.resumeUrl }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "token",
+              "displayName": "token",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "inquiry_id",
+              "displayName": "inquiry_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "user_email",
+              "displayName": "user_email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "expires_at",
+              "displayName": "expires_at",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "used_at",
+              "displayName": "used_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resume_url",
+              "displayName": "resume_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3600,
+        512
+      ],
+      "id": "e8d55fa8-10e5-49ad-98ca-dda7dd142107",
+      "name": "Insert rows in a table",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f36ea930-6d88-4009-bdc4-07dd010f48a5",
+              "name": "authURL",
+              "value": "https://n8n.dotutorials.fun/webhook-test/269e51b4-f98b-4fa3-a9dd-43821c416d50",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3824,
+        512
+      ],
+      "id": "5cdca56c-3cbf-4229-b0c7-2ab66d5563c1",
+      "name": "Get auth workflow webhook URL"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch for sub-workflow routing by category').item.json.inquirerContactEmail }}",
+        "subject": "[ACTION NEEDED] Authenticate your DigitalOcean inquiry",
+        "emailType": "text",
+        "message": "=Hi there,\n\nEarlier, you submitted a question to Digital Ocean - here's the summary:\n\n{{ $('Switch for sub-workflow routing by category').item.json.inquirySummary }}\n\nPlease click the magic link below to authenticate. If you did NOT make this request, then please do NOT click this link.\n\n{{ $json.authURL }}?token={{ $('Insert rows in a table').item.json.token }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        4048,
+        512
+      ],
+      "id": "c774abef-42cf-4353-8c46-65e75d2ea844",
+      "name": "Email magic link",
+      "webhookId": "4c954839-ab7f-4738-86c2-cbf517002a42",
+      "alwaysOutputData": false,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "incomingAuthentication": "headerAuth",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4256,
+        512
+      ],
+      "id": "69fa1044-ab89-42a1-aba3-c5e5717626d7",
+      "name": "Wait for authorization",
+      "webhookId": "deeb1c7f-f453-415b-bf1d-446e4f15784b",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "action": "generate",
+        "encodingType": "hex",
+        "stringLength": 64
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        3360,
+        512
+      ],
+      "id": "aa9aa208-2069-44b4-9f6c-a875e1596320",
+      "name": "Generate token"
+    }
+  ],
+  "connections": {
+    "Define inquiry categories": {
+      "main": [
+        [
+          {
+            "node": "Add inquiry categories string",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add inquiry categories string": {
+      "main": [
+        [
+          {
+            "node": "Determine inquiry type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename fields for interface adherence": {
+      "main": [
+        [
+          {
+            "node": "Switch for sub-workflow routing by category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract and format LLM response (Inquiry type)": {
+      "main": [
+        [
+          {
+            "node": "Rename fields for interface adherence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine inquiry type": {
+      "main": [
+        [
+          {
+            "node": "Extract and format LLM response (Inquiry type)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perform BANT analysis": {
+      "main": [
+        [
+          {
+            "node": "Extract and format LLM response (BANT)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract and format LLM response (BANT)": {
+      "main": [
+        [
+          {
+            "node": "Calculate overall BANT score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate overall BANT score": {
+      "main": [
+        [
+          {
+            "node": "Get company information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine lead priority": {
+      "main": [
+        [
+          {
+            "node": "Formulate email (low priority)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formulate email (medium priority)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formulate email (high priority)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "BANT priority error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formulate email (low priority)": {
+      "main": [
+        [
+          {
+            "node": "Funnel email branches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formulate email (medium priority)": {
+      "main": [
+        [
+          {
+            "node": "Funnel email branches",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Formulate email (high priority)": {
+      "main": [
+        [
+          {
+            "node": "Funnel email branches",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Get company information": {
+      "main": [
+        [
+          {
+            "node": "Get brand information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get brand information": {
+      "main": [
+        [
+          {
+            "node": "Determine lead priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify email is appropriate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Funnel email branches": {
+      "main": [
+        [
+          {
+            "node": "Verify email is appropriate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Create a text completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create product answering system prompt": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define product question exception types (Gradient AI agent)": {
+      "main": [
+        [
+          {
+            "node": "Create product answering system prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Define inquiry categories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission (Product)": {
+      "main": [
+        []
+      ]
+    },
+    "Create a text completion": {
+      "main": [
+        [
+          {
+            "node": "Send email (product info)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define support request categories": {
+      "main": [
+        [
+          {
+            "node": "Add support request categories string",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add support request categories string": {
+      "main": [
+        [
+          {
+            "node": "Determine support inquiry type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine support inquiry type": {
+      "main": [
+        [
+          {
+            "node": "Extract and format LLM response (Support inquiry type)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract and format LLM response (Support inquiry type)": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch for sub-workflow routing by category": {
+      "main": [
+        [
+          {
+            "node": "Perform BANT analysis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Define support request categories",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Inquiry categorization error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Generate token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Define product question exception types (n8n agent)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle default case",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Support request categorization error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission (Account)": {
+      "main": [
+        [
+          {
+            "node": "On form submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission (Sales - medium priority)": {
+      "main": [
+        []
+      ]
+    },
+    "On form submission (Sales - high priority)": {
+      "main": [
+        []
+      ]
+    },
+    "On form submission (Sales - low priority)": {
+      "main": [
+        []
+      ]
+    },
+    "Upload your file here": {
+      "main": [
+        [
+          {
+            "node": "In-memory vector store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "In-memory vector store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Query Data Tool",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "In-memory vector store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Data Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define product question exception types (n8n agent)": {
+      "main": [
+        [
+          {
+            "node": "Create product answering system prompt (n8n agent)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create product answering system prompt (n8n agent)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Formulate email (RAG)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formulate email (RAG)": {
+      "main": [
+        [
+          {
+            "node": "Email product info (manual RAG)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Get auth workflow webhook URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get auth workflow webhook URL": {
+      "main": [
+        [
+          {
+            "node": "Email magic link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email magic link": {
+      "main": [
+        [
+          {
+            "node": "Wait for authorization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate token": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "On form submission (Product)": [
+      {
+        "Name": "John Smith",
+        "Company": "Amazing Company",
+        "What can we help you with? The more details you provide, the better we can help!": "Hi there,\r\n\r\nWhat HTTP request can I use to list my DigitalOcean Droplets with your API?\r\n\r\nThanks,\r\nJohn",
+        "Where can we reach you?": "youremail@email.com",
+        "submittedAt": "2025-09-26T15:37:51.586-04:00",
+        "formMode": "test"
+      }
+    ],
+    "On form submission (Account)": [
+      {
+        "Name": "John Smith",
+        "Company": "Amazing Company",
+        "What can we help you with? The more details you provide, the better we can help!": "Hi there,\r\n\r\nMy name is John, and I'm wondering if you can answer something regarding my account. I want to know how many droplets I currently running for my account.\r\n\r\nThanks,\r\nJohn",
+        "Where can we reach you?": "youremail@email.com",
+        "submittedAt": "2025-09-26T16:46:14.054-04:00",
+        "formMode": "test"
+      }
+    ],
+    "On form submission (Sales - medium priority)": [
+      {
+        "Name": "John Smith",
+        "Company": "Amazing Company",
+        "What can we help you with? The more details you provide, the better we can help!": "Hi there,\r\n\r\nMy name is John, and I'm the lead developer at Amazing Company.\r\n\r\nWe're currently planning to migrate our application's backend infrastructure. Right now, our setup consists of a few Node.js services and a PostgreSQL database hosted on another provider, but we're finding the billing to be overly complex and are consistently running into performance bottlenecks during peak usage.\r\n\r\nMy team has been tasked with finding a more streamlined and cost-predictable solution. We're trying to keep our monthly infrastructure spend around the $800-$1000 mark as we scale. Could you provide some guidance on what a comparable setup would look like on DigitalOcean, specifically around your Managed Databases and App Platform offerings?\r\n\r\nThanks,\r\nJohn",
+        "Where can we reach you?": "youremail@email.com",
+        "submittedAt": "2025-09-26T12:24:02.035-04:00",
+        "formMode": "test"
+      }
+    ],
+    "On form submission (Sales - high priority)": [
+      {
+        "Name": "John Smith",
+        "Company": "Amazing Company",
+        "What can we help you with? The more details you provide, the better we can help!": "Hi there,\r\n\r\nMy name is John, and I'm the lead developer at Amazing Company.\r\n\r\nWe're currently planning to migrate our application's backend infrastructure. Right now, our setup consists of a few Node.js services and a PostgreSQL database hosted on another provider, but we're finding the billing to be overly complex and are consistently running into performance bottlenecks during peak usage.\r\n\r\nMy team has been tasked with finding a more streamlined and cost-predictable solution. We're trying to keep our monthly infrastructure spend around the $800-$1000 mark as we scale.\r\n\r\nOur current hosting agreement is up at the end of next quarter, so we're looking to make a decision and begin the migration process before the holiday season rush begins in November.\r\n\r\nI'm putting together the formal proposal for our CTO. Could you provide some guidance on what a comparable setup would look like on DigitalOcean, specifically around your Managed Databases and App Platform offerings?\r\n\r\nThanks,\r\nJohn",
+        "Where can we reach you?": "youremail@email.com",
+        "submittedAt": "2025-09-26T12:24:02.035-04:00",
+        "formMode": "test"
+      }
+    ],
+    "On form submission (Sales - low priority)": [
+      {
+        "Name": "John Smith",
+        "Company": "Amazing Company",
+        "What can we help you with? The more details you provide, the better we can help!": "Hi there,\r\n\r\nMy name is John, and I'm a developer at Amazing Company. Can I talk to a sales representative? I have questions. \r\n\r\nThanks,\r\nJohn",
+        "Where can we reach you?": "youremail@email.com",
+        "submittedAt": "2025-09-26T12:24:02.035-04:00",
+        "formMode": "test"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1d98ee859aadb38944e4bde4cbd89d3abe69eae5b9e4f0616cd6cde55f7bcc3a"
+  }
+}
