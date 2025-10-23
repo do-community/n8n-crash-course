@@ -54,11 +54,11 @@ Watch it on YouTube:
 
 Watch it on YouTube:
 
-[![Lesson 7 video](../../thumbnails/lesson_7.jpg)](https://www.youtube.com/watch?v=N0fFCq1i0mI&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=7)
+[![Lesson 7 video](thumbnails/lesson_7.jpg)](https://www.youtube.com/watch?v=N0fFCq1i0mI&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=7)
 
 
 # [Lesson 8 - Add a database to n8n](./lessons/lesson_8/README.md)
 
 Watch it on YouTube:
 
-[![Lesson 8 video](../../thumbnails/lesson_8.jpg)](https://www.youtube.com/watch?v=OLdrBML0N7k&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=8)as
+[![Lesson 8 video](thumbnails/lesson_8.jpg)](https://www.youtube.com/watch?v=OLdrBML0N7k&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=8)as
