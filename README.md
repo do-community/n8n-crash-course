@@ -45,4 +45,10 @@ Learn how to create magic link tokens for authentication in n8n
 
 Learn how to spin up and connect a database to n8n (and avoid certificate errors)
 
-[Watch it on YouTube](https://www.youtube.com/watch?v=qbmVWY7DcXQ&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=8)as
+[Watch it on YouTube](https://www.youtube.com/watch?v=qbmVWY7DcXQ&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=8)
+
+# [Lesson 9 - Build an authentication workflow](./lessons/lesson_8/README.md)
+
+Learn how to build an authentication workflow in n8n
+
+[Watch it on YouTube](https://www.youtube.com/watch?v=mvnA-kwO-YA&list=PLseEp7p6EwibcvBe7cOWqDmN99zA1YFL2&index=9)
