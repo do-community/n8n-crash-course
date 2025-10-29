@@ -1,0 +1,457 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "043f7547-b454-42e2-b1b4-398e792af483",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        352
+      ],
+      "id": "c6b5349b-1614-4177-aa04-41c0c6303c01",
+      "name": "Webhook",
+      "webhookId": "043f7547-b454-42e2-b1b4-398e792af483"
+    },
+    {
+      "parameters": {
+        "content": "Ensure `Settings > Always output data` is enabled in this node in case the token is not in the database.",
+        "height": 112,
+        "width": 262
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        416,
+        224
+      ],
+      "typeVersion": 1,
+      "id": "ad6a85df-ec47-43ab-9378-8c75fdc46265",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0cbce3a6-fffc-410d-b5b6-3e6dedf5132f",
+              "leftValue": "={{ $json }}",
+              "rightValue": "={{ $json.query.token }}",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "65272487-9d58-4135-bd3f-4d64b47d2228",
+              "leftValue": "={{ $json.used_at }}",
+              "rightValue": "[null]",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "2710796a-4a56-40b4-9d8d-a269ca1dd5c1",
+              "leftValue": "={{ $json.expires_at }}",
+              "rightValue": "={{ $now }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        352
+      ],
+      "id": "9b03d011-b1a5-438d-a66e-074d120fb430",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b7af034-a63a-4a4a-964b-352fa5bf6ab3",
+              "name": "authenticated",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1728,
+        432
+      ],
+      "id": "2614129a-e627-42db-9b0d-23a1f8f6acf0",
+      "name": "Set authenticated false"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Search for record by token').item.json.resume_url }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "authenticated",
+              "value": "={{ $json.authenticated }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2240,
+        320
+      ],
+      "id": "486eda05-979c-4946-8397-53b353edf00c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "# SECURITY NOTE\n\nYou **must** use a POST request here. Do **NOT** put sensitive or identifying information in URL parameters - this is not a secure method. URL parameters are subject to logging, etc.\n\nAdditionally, you **MUST** use request authentication (e.g. Header auth) between this auth workflow and your main workflow",
+        "height": 256,
+        "width": 390
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2224,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "d0d9941e-165d-4f70-b486-85a9ccbe6d4c",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2000,
+        320
+      ],
+      "id": "c15a4f7a-b902-4c6b-b572-c88151f4a49c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "We need to check to ensure:\n1. That the search results are not empty (i.e. that there exists a record matching that magic link token)\n2. The token is not expired\n3. The token has not been consumed\n\nOnly if all three conditions are met do we consume the token and authenticate the user.\n\nDo not raise errors here (or anywhere in this workflow). The role of this workflow is only to provide authentication status for the main workflow.",
+        "height": 224,
+        "width": 630
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        624,
+        528
+      ],
+      "typeVersion": 1,
+      "id": "b3653c7a-bf10-4903-8b77-87efab037359",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Update the token record to be used, saving its consumption datetime.",
+        "height": 80,
+        "width": 326
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        928,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "6157f565-eee0-4ec0-8567-5761691dce8d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b7af034-a63a-4a4a-964b-352fa5bf6ab3",
+              "name": "authenticated",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        256
+      ],
+      "id": "2debe0c3-e0fc-49f6-b5bb-e5562dc4a915",
+      "name": "Set authenticated true"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "auth_tokens",
+          "mode": "list",
+          "cachedResultName": "auth_tokens"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "used_at": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "token",
+              "displayName": "token",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "inquiry_id",
+              "displayName": "inquiry_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "user_email",
+              "displayName": "user_email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "expires_at",
+              "displayName": "expires_at",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "used_at",
+              "displayName": "used_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resume_url",
+              "displayName": "resume_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1040,
+        256
+      ],
+      "id": "87697ad4-cf23-4f66-ba2d-3ee1cdaf6826",
+      "name": "Consume the token",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "auth_tokens",
+          "mode": "list",
+          "cachedResultName": "auth_tokens"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "token",
+              "value": "={{ $json.query.token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        496,
+        352
+      ],
+      "id": "aceadfc0-40a2-44e7-bbda-cea7ef8afbd6",
+      "name": "Search for record by token",
+      "alwaysOutputData": true,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "content": "Make a POST request back to the main workflow, using the `resume_url` stored in the database record.\n\nEach token is associated with a particular execution of the main workflow.",
+        "height": 112,
+        "width": 390
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2128,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "eec6592f-7ca3-4832-bd25-f01fae6a40ad",
+      "name": "Sticky Note19"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Search for record by token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Consume the token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set authenticated false",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set authenticated false": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set authenticated true": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consume the token": {
+      "main": [
+        [
+          {
+            "node": "Set authenticated true",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search for record by token": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1d98ee859aadb38944e4bde4cbd89d3abe69eae5b9e4f0616cd6cde55f7bcc3a"
+  }
+}

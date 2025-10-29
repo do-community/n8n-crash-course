@@ -12,7 +12,7 @@
         416,
         0
       ],
-      "id": "5cf951ff-56e2-4479-ba9c-4f7808b069e0",
+      "id": "72f94423-08a2-4773-8bf6-9ff1f775ed6b",
       "name": "Define inquiry categories"
     },
     {
@@ -25,7 +25,7 @@
         624,
         0
       ],
-      "id": "2a5e957d-b2a7-4e70-b1a1-e1e51205f463",
+      "id": "70a9c2f8-74c2-417d-9a1a-132851aab3de",
       "name": "Add inquiry categories string"
     },
     {
@@ -84,7 +84,7 @@
         1232,
         0
       ],
-      "id": "0c26b3e2-ca6d-4aad-bcc0-69cd6f1471ff",
+      "id": "f1bac756-8b25-48fe-9daa-620c993ea31a",
       "name": "Rename fields for interface adherence"
     },
     {
@@ -97,7 +97,7 @@
         1024,
         0
       ],
-      "id": "9744e500-1fb6-42d2-bae5-953a031276a9",
+      "id": "ff8460a6-bb2f-483c-a0fc-2317d424f9f4",
       "name": "Extract and format LLM response (Inquiry type)"
     },
     {
@@ -116,7 +116,7 @@
         816,
         0
       ],
-      "id": "96aa6809-c00f-43b4-a4a0-8ee9584c88f1",
+      "id": "999a722d-9035-44ed-af1a-da83d843e169",
       "name": "Determine inquiry type",
       "credentials": {}
     },
@@ -133,7 +133,7 @@
         -432
       ],
       "typeVersion": 1,
-      "id": "90cb3216-1e6e-43e6-addd-a43406fd29f4",
+      "id": "051f5e8f-3b54-446d-8655-58de727921b2",
       "name": "Sticky Note1"
     },
     {
@@ -149,7 +149,7 @@
         -624
       ],
       "typeVersion": 1,
-      "id": "1c2754d2-6692-4a2c-a4fa-e4a55a9976c1",
+      "id": "841207e1-8129-45f3-9e2c-e07e2ce63351",
       "name": "Sticky Note4"
     },
     {
@@ -165,7 +165,7 @@
         -624
       ],
       "typeVersion": 1,
-      "id": "c65d16b0-b6ee-4f94-91c2-49436f4056ff",
+      "id": "4310642d-118b-4e1a-8483-116cd44b726b",
       "name": "Sticky Note2"
     },
     {
@@ -180,7 +180,7 @@
         -128
       ],
       "typeVersion": 1,
-      "id": "6461ad80-061e-450c-b6e6-86bcbba5e549",
+      "id": "af8169db-7fe9-41db-b29e-7527d54fe950",
       "name": "Sticky Note25"
     },
     {
@@ -195,7 +195,7 @@
         -128
       ],
       "typeVersion": 1,
-      "id": "0994b7ac-a334-451a-a3bc-7969a5606fef",
+      "id": "21da42ff-aa57-4c4b-8281-239a733ac597",
       "name": "Sticky Note26"
     },
     {
@@ -210,7 +210,7 @@
         208
       ],
       "typeVersion": 1,
-      "id": "07729e93-9e93-4241-b111-44a4849a9875",
+      "id": "f0896895-f8f9-4f2f-b998-7a8f4685310c",
       "name": "Sticky Note3"
     },
     {
@@ -229,7 +229,7 @@
         1840,
         -224
       ],
-      "id": "6eea876d-3a1e-4c8d-aede-7ae2dd683da4",
+      "id": "29a19e93-c6b3-4a8f-bfb0-9d7200cde184",
       "name": "Perform BANT analysis"
     },
     {
@@ -244,7 +244,7 @@
         -48
       ],
       "typeVersion": 1,
-      "id": "d70beaa8-e2e1-4ed3-a02e-21463b386503",
+      "id": "3d1e355c-14df-4672-ab70-704f493e1d4c",
       "name": "Sticky Note5"
     },
     {
@@ -257,7 +257,7 @@
         2064,
         -224
       ],
-      "id": "64d4f108-bb22-4780-9acd-78d579c267cb",
+      "id": "aaafd6f8-31d9-4a8d-8ec9-563ced00c898",
       "name": "Extract and format LLM response (BANT)"
     },
     {
@@ -280,7 +280,7 @@
         2288,
         -224
       ],
-      "id": "b44654a6-6e86-45e6-9f63-6bf872e51594",
+      "id": "c5b5cace-e1bd-4dc0-8472-88d3974ff6bd",
       "name": "Calculate overall BANT score"
     },
     {
@@ -371,7 +371,7 @@
         2912,
         -256
       ],
-      "id": "023cc2a3-3b89-4e60-b1f6-dbb3ea9114d9",
+      "id": "ab2dbb43-7f60-4df7-877a-26acf2ccb8dc",
       "name": "Determine lead priority"
     },
     {
@@ -384,7 +384,7 @@
         1392,
         320
       ],
-      "id": "c04687ac-f64e-4060-98f3-9c2dd9db1e73",
+      "id": "86a421a1-ebb1-4e95-acf1-cec306abbb9d",
       "name": "Inquiry categorization error"
     },
     {
@@ -397,7 +397,7 @@
         2912,
         48
       ],
-      "id": "62d1bebf-2819-4bb9-9b4c-c40b2f6e7cd9",
+      "id": "88090203-69e7-4c0a-9764-1091aaf824b4",
       "name": "BANT priority error"
     },
     {
@@ -416,7 +416,7 @@
         3232,
         -416
       ],
-      "id": "96b4f290-114d-4110-ab12-0372de572cc4",
+      "id": "d166ef9e-e771-46f3-b573-5bf300138645",
       "name": "Formulate email (low priority)"
     },
     {
@@ -435,7 +435,7 @@
         3232,
         -192
       ],
-      "id": "7315f535-b306-49c2-a806-6f7f72fbceb5",
+      "id": "26553692-4d19-47d7-9b06-e0f89bcce228",
       "name": "Formulate email (medium priority)"
     },
     {
@@ -454,7 +454,7 @@
         3232,
         32
       ],
-      "id": "45c66e30-9752-40db-812f-c14c35ad91d3",
+      "id": "405e6aaa-e067-4c88-8d1f-553dbc46d392",
       "name": "Formulate email (high priority)"
     },
     {
@@ -468,7 +468,7 @@
         2496,
         -224
       ],
-      "id": "1e6532e7-e6ee-4a63-b49b-ed97e5140e95",
+      "id": "60c91aa3-bf04-451a-aade-fb92307fa75d",
       "name": "Get company information"
     },
     {
@@ -482,7 +482,7 @@
         2704,
         -224
       ],
-      "id": "1e8f1be7-8425-485f-a047-1742a63ee1ba",
+      "id": "41aefa94-9d1d-42ca-aae8-1e49db75dc7d",
       "name": "Get brand information"
     },
     {
@@ -501,7 +501,7 @@
         3712,
         -192
       ],
-      "id": "fbaafc13-62e1-4d02-81b4-7037575fe935",
+      "id": "37d27896-49e9-4427-bca0-b6e081e381b1",
       "name": "Verify email is appropriate"
     },
     {
@@ -514,7 +514,7 @@
         3520,
         -208
       ],
-      "id": "57a57251-2c7b-4bb6-b2ef-1f7f57ecaee6",
+      "id": "e88e2aa1-1472-4344-8f13-48ce72a8933e",
       "name": "Funnel email branches"
     },
     {
@@ -533,9 +533,9 @@
         4192,
         -192
       ],
-      "id": "68580331-7f59-4c6d-a293-1dbc10772d6d",
+      "id": "8b63ade4-0d62-4602-9ca0-f9e858effff6",
       "name": "Send a message",
-      "webhookId": "eb7a6cde-7ac7-4230-a41d-d4176fbb9c8b"
+      "webhookId": "37697c4e-3c2a-4e2a-a757-8a087d33b106"
     },
     {
       "parameters": {
@@ -715,7 +715,7 @@
         4432,
         -192
       ],
-      "id": "7f934a7a-341f-421e-8f25-647b2bfc0a33",
+      "id": "132771f4-502c-4274-8486-2487edd6e16a",
       "name": "Append row in sheet"
     },
     {
@@ -729,9 +729,9 @@
         3920,
         -336
       ],
-      "id": "5ae8b1cb-6772-41cc-82fa-7927dfb35c13",
+      "id": "5d2f2a4b-9701-4ef6-8248-09bcb390b527",
       "name": "Wait",
-      "webhookId": "84e50d08-0313-45c1-964e-ecccc594ce2a"
+      "webhookId": "f3d468af-d6c3-48dd-acf9-97d33c9b319c"
     },
     {
       "parameters": {
@@ -754,9 +754,9 @@
       "typeVersion": 4.2,
       "position": [
         3856,
-        1136
+        1312
       ],
-      "id": "08830cb7-f260-4dd4-acfa-713d5806cc3c",
+      "id": "a72f6ccc-7e4a-4722-a415-0ddb83b142f1",
       "name": "HTTP Request"
     },
     {
@@ -777,9 +777,9 @@
       "typeVersion": 3.4,
       "position": [
         3616,
-        1136
+        1312
       ],
-      "id": "fa8ccfe7-b2f6-4cb0-91b8-549718fc56b3",
+      "id": "96634e3f-138c-4e7d-b5a8-40aa35a82087",
       "name": "Create product answering system prompt"
     },
     {
@@ -806,9 +806,9 @@
       "typeVersion": 3.4,
       "position": [
         3360,
-        1136
+        1312
       ],
-      "id": "e243d047-117e-4d9b-ba4f-ab3e582f29fb",
+      "id": "9ee96404-8789-4d97-968f-f9b9755051e1",
       "name": "Define product question exception types (Gradient AI agent)"
     },
     {
@@ -819,7 +819,7 @@
         176,
         0
       ],
-      "id": "6a1994ae-dfc1-46bc-a538-a4429f1f95ff",
+      "id": "8b2a1d9e-797a-4f89-8ace-ddee64571e0c",
       "name": "On form submission"
     },
     {
@@ -861,9 +861,9 @@
         -160,
         -16
       ],
-      "id": "75c3af8f-633c-4398-9dd1-9d0c88005321",
+      "id": "0c68eeba-1af5-434b-8492-b15b290109ff",
       "name": "On form submission (Product)",
-      "webhookId": "78146545-4cce-4a42-90f2-542aaf7bb0d0"
+      "webhookId": "591c819e-b1a5-4916-ad34-ec4c5c987ed5"
     },
     {
       "parameters": {
@@ -879,11 +879,11 @@
       "typeVersion": 2.1,
       "position": [
         4352,
-        1136
+        1312
       ],
-      "id": "e8670d63-72d5-40cd-a054-6cc147519117",
+      "id": "d347cdc2-8432-4535-a6c8-ecff886af947",
       "name": "Send email (product info)",
-      "webhookId": "46182269-f1ad-4846-beff-9a3b561765c2"
+      "webhookId": "d7e67225-32a4-40fb-9350-308490428235"
     },
     {
       "parameters": {
@@ -899,9 +899,9 @@
       "typeVersion": 1,
       "position": [
         4112,
-        1136
+        1312
       ],
-      "id": "07ff845b-1e5f-4e83-9bcf-199e6b8876e9",
+      "id": "706af19f-c313-4c43-a759-c714dd1ff3af",
       "name": "Create a text completion"
     },
     {
@@ -916,7 +916,7 @@
         -288
       ],
       "typeVersion": 1,
-      "id": "5c7cff7d-8657-4b3b-82ec-7f259402c966",
+      "id": "c89ed4d5-9602-4bd9-990f-0e6400ca74a1",
       "name": "Sticky Note7"
     },
     {
@@ -931,7 +931,7 @@
         -576
       ],
       "typeVersion": 1,
-      "id": "8b8a221d-c7e0-4cb4-8e80-ccc37338ce0f",
+      "id": "21965229-5c8a-4de5-8413-a71194dc7a96",
       "name": "Sticky Note"
     },
     {
@@ -946,7 +946,7 @@
         -448
       ],
       "typeVersion": 1,
-      "id": "0faabd6e-060d-4b98-8c34-fdfe3a52148e",
+      "id": "041a085e-aadb-499a-9593-a65dcabbd56d",
       "name": "Sticky Note20"
     },
     {
@@ -961,7 +961,7 @@
         -432
       ],
       "typeVersion": 1,
-      "id": "c94227d1-a2fc-44d3-9e6b-139aab08d5ee",
+      "id": "c9f2b8b3-d5d5-48d8-a9ce-f0db6a8e1ecd",
       "name": "Sticky Note21"
     },
     {
@@ -976,7 +976,7 @@
         -16
       ],
       "typeVersion": 1,
-      "id": "5e100e37-da4b-4c8f-8d10-b507ed953471",
+      "id": "9be370e2-530a-484a-ad98-6138e4ea624f",
       "name": "Sticky Note22"
     },
     {
@@ -991,7 +991,7 @@
         -416
       ],
       "typeVersion": 1,
-      "id": "40edcdf4-6ea9-4f6d-9fc0-f207d55fa924",
+      "id": "165e7507-068c-41a7-806b-0622fedfd2a1",
       "name": "Sticky Note23"
     },
     {
@@ -1006,13 +1006,13 @@
         -16
       ],
       "typeVersion": 1,
-      "id": "4b7caba6-e12a-48ea-b979-73ccb4fddd59",
+      "id": "4ffebe39-de2e-4dac-934f-d84cb5249c77",
       "name": "Sticky Note24"
     },
     {
       "parameters": {
         "content": "# Support inquiry (account-specific and general)\n\nHandle support requests by routing to the appropriate workflow",
-        "height": 2032,
+        "height": 2208,
         "width": 3568,
         "color": 4
       },
@@ -1022,7 +1022,7 @@
         272
       ],
       "typeVersion": 1,
-      "id": "61dd8b12-4d64-42a5-8cfe-d8b80ef91c77",
+      "id": "3408a01f-57aa-41b2-ae0d-f32e39dc6cda",
       "name": "Sticky Note6"
     },
     {
@@ -1035,10 +1035,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         3264,
-        880
+        1056
       ],
       "typeVersion": 1,
-      "id": "ace4dfc7-396d-426f-bc3c-f7b4bb5c87d2",
+      "id": "d0339513-8e97-4e67-9a03-7cc2ad92dce6",
       "name": "Sticky Note8"
     },
     {
@@ -1051,10 +1051,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         4688,
-        976
+        1152
       ],
       "typeVersion": 1,
-      "id": "76083429-6275-469e-9940-6ba6cb76d59e",
+      "id": "8c4d9752-8eb8-4824-a092-669b7eb4efd3",
       "name": "Sticky Note13"
     },
     {
@@ -1069,7 +1069,7 @@
         1952,
         560
       ],
-      "id": "e79974c9-9802-479d-944f-95cdc4497840",
+      "id": "b294f8db-d902-419c-8aa9-c0026d4d2d13",
       "name": "Define support request categories"
     },
     {
@@ -1082,7 +1082,7 @@
         2176,
         560
       ],
-      "id": "41adc78b-517e-4bd4-b5ef-a8d745e629bd",
+      "id": "8a2251df-ed6c-4843-9b56-2c707ae126b2",
       "name": "Add support request categories string"
     },
     {
@@ -1095,7 +1095,7 @@
         2832,
         848
       ],
-      "id": "6a6d5006-b993-4862-953c-310ad4e8de23",
+      "id": "7f6aec92-fd28-44f9-ad04-710fd8807c30",
       "name": "Support request categorization error"
     },
     {
@@ -1114,7 +1114,7 @@
         2400,
         560
       ],
-      "id": "de39cae8-6356-432b-a60b-cc0c0fc9cf3b",
+      "id": "5553d969-e049-4065-80d2-f4f1449ef813",
       "name": "Determine support inquiry type",
       "credentials": {}
     },
@@ -1128,7 +1128,7 @@
         2624,
         560
       ],
-      "id": "c5d72142-ca7c-40df-98c0-38286ebd381f",
+      "id": "56532068-1c06-44c9-9899-4222dbd10c06",
       "name": "Extract and format LLM response (Support inquiry type)"
     },
     {
@@ -1143,7 +1143,7 @@
         416
       ],
       "typeVersion": 1,
-      "id": "59551aff-3765-4641-bac9-7bd9f7147115",
+      "id": "d3bc02dc-5c8a-4889-ba79-680be5a31caa",
       "name": "Sticky Note27"
     },
     {
@@ -1157,9 +1157,9 @@
       "typeVersion": 1,
       "position": [
         3232,
-        800
+        976
       ],
-      "id": "2ff14365-0738-45c4-84b0-6a5211b67339",
+      "id": "f363c22b-87b5-4982-858f-e95ed031b994",
       "name": "Sticky Note12"
     },
     {
@@ -1252,7 +1252,7 @@
         1424,
         -32
       ],
-      "id": "f3611161-cfa8-4d71-8d38-06d7fee4891c",
+      "id": "201b7679-50ac-424f-ae0e-da1c42c413df",
       "name": "Switch for sub-workflow routing by category"
     },
     {
@@ -1345,7 +1345,7 @@
         2832,
         528
       ],
-      "id": "583fff3c-be3d-4a77-9cb7-979ab2c23ecb",
+      "id": "cdf7e673-7e2d-4060-ba40-b41fe5c2ab25",
       "name": "Switch"
     },
     {
@@ -1387,9 +1387,9 @@
         -160,
         -240
       ],
-      "id": "a750aedb-c721-410f-8b6e-73bbf763ebe4",
+      "id": "b4743771-301a-41f8-a59c-c7efb1450830",
       "name": "On form submission (Account)",
-      "webhookId": "e4257a37-037f-4206-855f-c27f061cb2a0"
+      "webhookId": "7087c510-0be6-4c15-b894-02c63aaf0b11"
     },
     {
       "parameters": {
@@ -1430,9 +1430,9 @@
         -160,
         400
       ],
-      "id": "04a11376-dd12-41cd-b73e-23abee63ba4b",
+      "id": "4f4fbcb8-0813-4000-b2ad-c962c327786a",
       "name": "On form submission (Sales - medium priority)",
-      "webhookId": "484a7d94-3d81-46e3-8355-cea7faaa4f1b"
+      "webhookId": "fc555cc6-0d6d-47ca-bf84-078347227327"
     },
     {
       "parameters": {
@@ -1473,9 +1473,9 @@
         -160,
         192
       ],
-      "id": "2f8087b3-ecf2-4267-a280-7a87e3dafe5c",
+      "id": "9cb648ec-1251-452e-9a8c-a70de4444b8e",
       "name": "On form submission (Sales - high priority)",
-      "webhookId": "8d473150-735e-4ceb-9d8d-8cd6f0f3eebb"
+      "webhookId": "faeea4cf-c72e-4895-9b91-0fbe06496f0f"
     },
     {
       "parameters": {
@@ -1516,9 +1516,9 @@
         -160,
         608
       ],
-      "id": "90c76e25-ef83-4fbd-9d2a-0badae18d837",
+      "id": "42d2a01e-60fa-465f-8801-fef56228757b",
       "name": "On form submission (Sales - low priority)",
-      "webhookId": "b35e3369-daa2-445d-b0bf-5ac6ce5fbc7a"
+      "webhookId": "67332efa-d0e6-4cd4-8654-b006061d22a0"
     },
     {
       "parameters": {
@@ -1530,7 +1530,7 @@
         3040,
         848
       ],
-      "id": "afd5c4e7-61b7-436d-ab35-9006fad17a03",
+      "id": "932ae9db-6931-4817-9bd9-27fb056ebc60",
       "name": "Handle default case"
     },
     {
@@ -1552,11 +1552,11 @@
       "typeVersion": 2.2,
       "position": [
         3328,
-        1664
+        1840
       ],
-      "id": "7d6cf369-e74a-48a7-bee5-bf369e331ea6",
+      "id": "83dbc182-31d7-4863-8802-616d7069dc01",
       "name": "Upload your file here",
-      "webhookId": "7ffa5fbc-d89c-458f-b319-1167746d7b92"
+      "webhookId": "0eadc5f0-e612-4591-865f-ed40a0409221"
     },
     {
       "parameters": {
@@ -1567,9 +1567,9 @@
       "typeVersion": 1.2,
       "position": [
         4320,
-        2128
+        2304
       ],
-      "id": "e2eeb8bc-97aa-4562-9a67-228121ff9600",
+      "id": "b892b357-5572-485e-b7c8-da12c04c4799",
       "name": "Embeddings OpenAI",
       "credentials": {}
     },
@@ -1584,9 +1584,9 @@
       "typeVersion": 1.1,
       "position": [
         3792,
-        1824
+        2000
       ],
-      "id": "f331386e-05cf-461b-b723-3eee39fd2d44",
+      "id": "206ab726-0d59-46cf-9317-bcc1ce1ff0f5",
       "name": "Default Data Loader"
     },
     {
@@ -1604,9 +1604,9 @@
       "typeVersion": 1.2,
       "position": [
         4688,
-        1712
+        1888
       ],
-      "id": "0062dfdd-f99a-4c86-8b35-22d897fae687",
+      "id": "eb7da817-9f27-4b78-ba2d-de91da9e38ab",
       "name": "Query Data Tool"
     },
     {
@@ -1622,9 +1622,9 @@
       "typeVersion": 1.2,
       "position": [
         4464,
-        1712
+        1888
       ],
-      "id": "e22405b6-3fbc-4495-a233-20a9e6cefe42",
+      "id": "b701d86d-2d24-445e-b8eb-d8aaf156d64f",
       "name": "OpenAI Chat Model",
       "credentials": {}
     },
@@ -1638,10 +1638,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         4000,
-        1440
+        1616
       ],
       "typeVersion": 1,
-      "id": "11b03b70-e1e9-4a6e-a531-525730352909",
+      "id": "6090bf03-707b-4442-8737-d09b408a7571",
       "name": "Sticky Note11"
     },
     {
@@ -1658,9 +1658,9 @@
       "typeVersion": 1.2,
       "position": [
         3520,
-        1664
+        1840
       ],
-      "id": "04625b3a-21a3-4e8c-a916-a4540f28f508",
+      "id": "f7d7c193-f331-4008-9a08-9ad7b497de7b",
       "name": "In-memory vector store"
     },
     {
@@ -1673,10 +1673,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         3264,
-        1408
+        1584
       ],
       "typeVersion": 1,
-      "id": "7b5955fe-5466-4e87-8f7c-492bf88fb202",
+      "id": "3af78246-c3d6-4fba-ac4e-1063ad22198e",
       "name": "Sticky Note14"
     },
     {
@@ -1689,10 +1689,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         3280,
-        1600
+        1776
       ],
       "typeVersion": 1,
-      "id": "ce127421-055f-4a24-a512-9418a900a80f",
+      "id": "2130bd13-7388-4a85-9d63-acf3a11f49f9",
       "name": "Sticky Note10"
     },
     {
@@ -1709,11 +1709,11 @@
       "typeVersion": 2.1,
       "position": [
         5136,
-        1504
+        1680
       ],
-      "id": "e9778829-4feb-4ce1-8304-481ecca63d70",
+      "id": "714a3152-e862-4229-84f9-b6bca9bb8321",
       "name": "Email product info (manual RAG)",
-      "webhookId": "21de7ec0-3afb-40cd-9392-7f0366d1c277",
+      "webhookId": "eb845445-87dd-496d-9e57-e4636186a781",
       "alwaysOutputData": false,
       "credentials": {}
     },
@@ -1741,9 +1741,9 @@
       "typeVersion": 3.4,
       "position": [
         4240,
-        1504
+        1680
       ],
-      "id": "b25ad643-a8db-4a7d-b765-451ddcc1eefb",
+      "id": "e704c53f-70a0-46c1-88d5-3cd057b0af98",
       "name": "Define product question exception types (n8n agent)"
     },
     {
@@ -1770,9 +1770,9 @@
       "typeVersion": 3.4,
       "position": [
         4448,
-        1504
+        1680
       ],
-      "id": "ede43446-dba2-4e21-97b4-9c3b52680554",
+      "id": "9ba81591-a2aa-4d29-a3d5-80fe168ffd2b",
       "name": "Create product answering system prompt (n8n agent)"
     },
     {
@@ -1787,9 +1787,9 @@
       "typeVersion": 2,
       "position": [
         4624,
-        1504
+        1680
       ],
-      "id": "5c7cbe1e-b113-4ae2-98e3-80bf903f210e",
+      "id": "25dd8e3f-585b-41e2-89bf-bc317493ce46",
       "name": "AI Agent"
     },
     {
@@ -1806,16 +1806,16 @@
       "typeVersion": 1,
       "position": [
         4944,
-        1504
+        1680
       ],
-      "id": "b69a99ff-5a00-4a6f-b5e3-a6b412fa4796",
+      "id": "5bf18c6a-4abb-459f-b7ef-919a310d4cf6",
       "name": "Formulate email (RAG)",
       "credentials": {}
     },
     {
       "parameters": {
         "content": "# Account-related questions (require authentication)",
-        "height": 480,
+        "height": 656,
         "width": 2208,
         "color": 2
       },
@@ -1825,13 +1825,13 @@
         3232,
         304
       ],
-      "id": "4f35f61f-062a-4621-a3c3-9e52ab5c9900",
+      "id": "339eb3c3-0648-458b-a63e-11557a3d2227",
       "name": "Sticky Note15"
     },
     {
       "parameters": {
         "content": "## Authentication workflow",
-        "height": 368,
+        "height": 528,
         "width": 1600,
         "color": 7
       },
@@ -1841,13 +1841,13 @@
         400
       ],
       "typeVersion": 1,
-      "id": "a543d793-e4c0-4088-9dcf-2da75090d37b",
+      "id": "63a5a932-d182-477b-8e45-fc71b5d8b094",
       "name": "Sticky Note29"
     },
     {
       "parameters": {
-        "content": "## Authorized inquiry handling\n",
-        "height": 368,
+        "content": "## Authorized inquiry handling\nAt this point, the user is **authenticated** and the automation can address his/her question.\n\nHow this is done is going to depend on your backend systems. For example, you may use Stripe to get billing details, or Postgres/MySQL to get account information, etc.\n\nYou can handle the reply formulation as seen in other parts of this workflow. Given that needs will vary so much between applications, I have ommitted the details.",
+        "height": 528,
         "width": 496,
         "color": 7
       },
@@ -1857,7 +1857,7 @@
         400
       ],
       "typeVersion": 1,
-      "id": "7c88f5f0-1b02-41db-bcbb-2d2265573f6e",
+      "id": "9b2fd235-52d5-433f-88a5-9deddf556450",
       "name": "Sticky Note30"
     },
     {
@@ -1959,10 +1959,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3600,
-        512
+        3568,
+        576
       ],
-      "id": "b52c29c7-bffb-4152-8de0-ff01c21ac2f7",
+      "id": "e8d55fa8-10e5-49ad-98ca-dda7dd142107",
       "name": "Insert rows in a table",
       "credentials": {}
     },
@@ -1983,10 +1983,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3824,
-        512
+        3792,
+        576
       ],
-      "id": "63db174c-59db-493e-a0d0-8cc66799b8aa",
+      "id": "5cdca56c-3cbf-4229-b0c7-2ab66d5563c1",
       "name": "Get auth workflow webhook URL"
     },
     {
@@ -2002,13 +2002,31 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        4048,
-        512
+        4016,
+        576
       ],
-      "id": "c5a4919f-d5ff-441b-8f67-8c9181b0229a",
+      "id": "c774abef-42cf-4353-8c46-65e75d2ea844",
       "name": "Email magic link",
-      "webhookId": "b8cedf41-d943-44af-8c70-d9ed07b782be",
+      "webhookId": "4c954839-ab7f-4738-86c2-cbf517002a42",
       "alwaysOutputData": false,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "incomingAuthentication": "headerAuth",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4224,
+        576
+      ],
+      "id": "69fa1044-ab89-42a1-aba3-c5e5717626d7",
+      "name": "Wait for authorization",
+      "webhookId": "deeb1c7f-f453-415b-bf1d-446e4f15784b",
       "credentials": {}
     },
     {
@@ -2020,11 +2038,125 @@
       "type": "n8n-nodes-base.crypto",
       "typeVersion": 1,
       "position": [
-        3360,
-        512
+        3328,
+        576
       ],
-      "id": "d2cbb675-13b6-4571-bb60-413973ce7350",
+      "id": "aa9aa208-2069-44b4-9f6c-a875e1596320",
       "name": "Generate token"
+    },
+    {
+      "parameters": {
+        "content": "## SECURITY NOTE\n\nYou MUST use a POST request with authentication between your auth workflow and this main workflow.",
+        "height": 144,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4112,
+        752
+      ],
+      "typeVersion": 1,
+      "id": "cfa33469-5291-4247-9085-1eecd34a3e77",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stripe",
+      "typeVersion": 1,
+      "position": [
+        5184,
+        640
+      ],
+      "id": "9c2bfb33-7708-43e7-acfa-b0b6c1f05f32",
+      "name": "Get a balance"
+    },
+    {
+      "parameters": {
+        "content": "Wait for a call from the auth workflow to deliver the auth status.",
+        "height": 80,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4160,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "5e52ac26-6b0e-48a1-a173-f8b702d1bb97",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "414ab952-59e3-412a-a0d5-00282b422701",
+              "leftValue": "={{ $json.body.authenticated }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4464,
+        576
+      ],
+      "id": "127cccde-8a88-4dbd-985e-4f96815df918",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "errorMessage": "User could not be authenticated"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        4656,
+        768
+      ],
+      "id": "58873b9b-a951-4bd2-bc45-5df7ae676cc7",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "resource": "charge"
+      },
+      "type": "n8n-nodes-base.stripe",
+      "typeVersion": 1,
+      "position": [
+        5104,
+        784
+      ],
+      "id": "bbcc1b93-ed18-48c4-9fd6-82b497e1a945",
+      "name": "Get a charge"
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log(\"User request handled\")\nreturn {}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4976,
+        688
+      ],
+      "id": "2c210f57-7191-4dcc-ad4e-be7908dc25ec",
+      "name": "Handle the request"
     }
   ],
   "connections": {
@@ -2552,7 +2684,24 @@
     },
     "Email magic link": {
       "main": [
-        []
+        [
+          {
+            "node": "Wait for authorization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for authorization": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Generate token": {
@@ -2560,6 +2709,24 @@
         [
           {
             "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Handle the request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
             "type": "main",
             "index": 0
           }
